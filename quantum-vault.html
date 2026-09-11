@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TRACK B // 64-Box Master Vault Heist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@700;900&family=Fira+Code:wght@400;600;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-dark: #060913;
+    --panel: #0f1628;
+    --border: #233252;
+    --gold: #ffb800;
+    --cyan: #00f0ff;
+    --red: #ff3366;
+    --emerald: #00ffa3;
+    --text: #f0f4ff;
+    --text-dim: #7f90b8;
+    --f-title: 'Chakra Petch', sans-serif;
+    --f-main: 'Outfit', sans-serif;
+    --f-mono: 'Fira Code', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg-dark);
+    color: var(--text);
+    font-family: var(--f-main);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: var(--panel);
+    border-bottom: 2px solid var(--border);
+    padding: 14px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .brand { font-family: var(--f-title); font-size: 1.1rem; font-weight: 900; }
+  .brand span { color: var(--gold); }
+  .hub-link { color: var(--text-dim); text-decoration: none; font-family: var(--f-mono); font-size: 0.8rem; }
+  .hub-link:hover { color: var(--gold); }
+
+  .workspace {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    height: calc(100vh - 62px);
+  }
+  @media (max-width: 1050px) { .workspace { grid-template-columns: 1fr; height: auto; } }
+
+  .vault-room {
+    padding: 24px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+  }
+  .matrix-64 {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 6px;
+    width: 100%;
+    max-width: 440px;
+    background: #04060c;
+    border: 2px solid var(--border);
+    padding: 12px;
+    border-radius: 12px;
+  }
+  .box-cell {
+    aspect-ratio: 1;
+    background: #111a30;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--f-mono);
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    transition: all 0.2s;
+  }
+  .box-cell.vibrating {
+    background: rgba(0, 240, 255, 0.2);
+    border-color: var(--cyan);
+    color: #fff;
+    box-shadow: 0 0 8px rgba(0,240,255,0.4);
+  }
+  .box-cell.cracked {
+    background: var(--emerald);
+    color: #030814;
+    font-weight: 700;
+    box-shadow: 0 0 20px var(--emerald);
+    transform: scale(1.15);
+  }
+
+  /* CONTROLS */
+  .control-card {
+    background: var(--panel);
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    padding: 22px;
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .dial-strip {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #070c18;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 18px;
+  }
+  .dial-btn {
+    width: 40px; height: 40px;
+    border: 1px solid var(--border);
+    background: #151e36;
+    color: #fff;
+    font-size: 1.3rem;
+    font-weight: 700;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .dial-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .dial-val { font-family: var(--f-mono); font-size: 1.6rem; font-weight: 900; color: var(--gold); }
+
+  .action-btn {
+    background: linear-gradient(135deg, var(--gold), #ff7700);
+    border: none;
+    color: #0f0a00;
+    font-family: var(--f-title);
+    font-weight: 900;
+    font-size: 1.05rem;
+    padding: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(255, 184, 0, 0.3);
+  }
+  .action-btn:hover { box-shadow: 0 0 30px rgba(255, 184, 0, 0.5); }
+
+  /* RIGHT STATS PANE */
+  .stats-room {
+    background: #03050c;
+    border-left: 2px solid var(--border);
+    padding: 24px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .stat-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .stat-card h4 { font-family: var(--f-title); font-size: 0.82rem; color: var(--cyan); letter-spacing: 0.08em; }
+  .stat-card p { font-size: 0.94rem; line-height: 1.55; color: var(--text-dim); }
+
+  .confidence-gauge {
+    height: 18px;
+    background: #060914;
+    border-radius: 9px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .gauge-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--gold), var(--emerald));
+    transition: width 0.3s ease;
+  }
+</style>
+</head>
+<body>
+  <header>
+    <div class="brand">TRACK B // <span>THE 64-BOX VAULT HEIST</span></div>
+    <a href="index.html" class="hub-link">← Return to Portal</a>
+  </header>
+
+  <div class="workspace">
+    <div class="vault-room">
+      <div class="matrix-64" id="matrix64">
+        <!-- 64 cells generated by script -->
+      </div>
+
+      <div class="control-card">
+        <div class="dial-strip">
+          <div>
+            <div style="font-family:var(--f-title); font-weight:700;">GROVER FOR-LOOP COUNT</div>
+            <div style="font-family:var(--f-mono); font-size:0.75rem; color:var(--text-dim);">for iteration in range(k):</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:12px;">
+            <button class="dial-btn" onclick="dial(-1)">−</button>
+            <div class="dial-val" id="dialVal">1</div>
+            <button class="dial-btn" onclick="dial(1)">+</button>
+          </div>
+        </div>
+
+        <button class="action-btn" onclick="crackSafe()">
+          🔓 FIRE GROVER ALGORITHM ON VAULT
+        </button>
+      </div>
+    </div>
+
+    <div class="stats-room">
+      <div class="stat-card">
+        <h4>QUANTUM CONSTRUCTIVE INTERFERENCE</h4>
+        <div style="display:flex; justify-content:space-between; font-family:var(--f-mono); font-size:0.86rem; margin-top:4px;">
+          <span>PROBABILITY OF SUCCESS</span>
+          <span id="probVal" style="color:var(--gold); font-weight:700;">15%</span>
+        </div>
+        <div class="confidence-gauge">
+          <div class="gauge-fill" id="gaugeFill" style="width: 15%;"></div>
+        </div>
+        <p id="feedbackNote" style="margin-top:6px;">Current configuration is under-powered. Adjust loop count.</p>
+      </div>
+
+      <div class="stat-card">
+        <h4>MATHEMATICAL SCALE COMPARISON</h4>
+        <p>A classical computer inspects combinations sequentially. For 64 boxes, it takes up to <b>64 checks</b> (avg. 32).</p>
+        <p>Grover's algorithm searches $N$ items in roughly $\frac{\pi}{4}\sqrt{N}$ steps. For 64 boxes: $\frac{\pi}{4}\sqrt{64} \approx \mathbf{6\text{ steps}}$ for over 99% certainty.</p>
+      </div>
+    </div>
+  </div>
+
+<script>
+  let k = 1;
+  const target = 42;
+
+  function renderGrid() {
+    const m = document.getElementById('matrix64');
+    m.innerHTML = '';
+    for(let i=0; i<64; i++) {
+      const d = document.createElement('div');
+      d.className = 'box-cell vibrating';
+      d.id = `b-${i}`;
+      d.textContent = i;
+      m.appendChild(d);
+    }
+  }
+
+  function calcConfidence(loops) {
+    const theta = Math.asin(1 / Math.sqrt(64));
+    const p = Math.pow(Math.sin((2 * loops + 1) * theta), 2);
+    return Math.round(p * 100);
+  }
+
+  function dial(delta) {
+    k = Math.max(1, Math.min(12, k + delta));
+    document.getElementById('dialVal').textContent = k;
+    const conf = calcConfidence(k);
+    document.getElementById('probVal').textContent = conf + "%";
+    document.getElementById('gaugeFill').style.width = conf + "%";
+
+    const note = document.getElementById('feedbackNote');
+    if (k === 6) {
+      note.textContent = "🎯 SWEET SPOT! 6 loops achieves 99.6% constructive interference. Fire the circuit!";
+      note.style.color = "var(--emerald)";
+    } else if (k > 6) {
+      note.textContent = "⚠️ OVERSHOT! Past 6 iterations, probability waves destructively cancel back down!";
+      note.style.color = "var(--red)";
+    } else {
+      note.textContent = "Under-powered. More amplification passes required.";
+      note.style.color = "var(--text-dim)";
+    }
+  }
+
+  function crackSafe() {
+    const conf = calcConfidence(k);
+    const win = (Math.random() * 100) < conf;
+
+    document.querySelectorAll('.box-cell').forEach(c => c.classList.remove('cracked'));
+    if (win) {
+      const cell = document.getElementById(`b-${target}`);
+      cell.classList.add('cracked');
+      cell.textContent = "💎";
+      alert(`VAULT CRACKED IN 1 PHYSICAL SHOT!\n\nConfidence: ${conf}%\nTarget combination #42 unbolted instantly.`);
+    } else {
+      alert(`FAILED: Circuit measured a false state.\n\nConfidence was only ${conf}%. Calibrate your loop to 6 iterations!`);
+    }
+  }
+
+  renderGrid();
+  dial(0);
+</script>
+</body>
+</html>
