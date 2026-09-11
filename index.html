@@ -3,1320 +3,1277 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OPERATION SUPERPOSITION // Quantum Programming</title>
+<title>OPERATION: THE KOH-I-NOOR // Quantum Safe Infiltration</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700;900&family=Fira+Code:wght@400;600;700&family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg-base: #060913;
-    --bg-surface: #0e1326;
-    --bg-surface-elevated: #161c36;
-    --border-subtle: #212b4d;
-    --border-bright: #3c4c82;
-    --text-primary: #f0f4ff;
-    --text-secondary: #9da8cb;
-    --text-muted: #5e6b94;
+    --steel-dark: #090c14;
+    --steel-mid: #131929;
+    --steel-light: #1e2840;
+    --steel-plate: #2b3859;
+    --gold: #ffb800;
+    --gold-glow: rgba(255, 184, 0, 0.4);
     --cyan: #00f0ff;
-    --cyan-glow: rgba(0, 240, 255, 0.35);
-    --amber: #ffb400;
-    --amber-glow: rgba(255, 180, 0, 0.35);
-    --crimson: #ff3366;
-    --crimson-glow: rgba(255, 51, 102, 0.35);
+    --cyan-glow: rgba(0, 240, 255, 0.4);
+    --laser-red: #ff1a40;
+    --laser-glow: rgba(255, 26, 64, 0.6);
     --emerald: #00ffa3;
-    --emerald-glow: rgba(0, 255, 163, 0.35);
-    --f-sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --f-mono: 'Fira Code', Consolas, Monaco, monospace;
+    --emerald-glow: rgba(0, 255, 163, 0.5);
+    --text-bright: #f0f4ff;
+    --text-dim: #7f8fae;
+    --f-title: 'Chakra Petch', sans-serif;
+    --f-sans: 'Outfit', sans-serif;
+    --f-mono: 'Fira Code', monospace;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  
+
   body {
-    background-color: var(--bg-base);
-    color: var(--text-primary);
+    background-color: var(--steel-dark);
+    color: var(--text-bright);
     font-family: var(--f-sans);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     overflow-x: hidden;
-    background-image: 
-      radial-gradient(circle at 15% 10%, rgba(0, 240, 255, 0.08) 0%, transparent 40%),
-      radial-gradient(circle at 85% 85%, rgba(0, 255, 163, 0.06) 0%, transparent 40%),
-      linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
-    background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+    user-select: none;
+    background-image:
+      radial-gradient(circle at 15% 15%, rgba(0, 240, 255, 0.08) 0%, transparent 45%),
+      radial-gradient(circle at 85% 85%, rgba(255, 26, 64, 0.08) 0%, transparent 45%),
+      repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.2) 0px, rgba(0, 0, 0, 0.2) 2px, transparent 2px, transparent 4px),
+      linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 100% 4px, 32px 32px, 32px 32px;
   }
 
-  /* Navigation & HUD Bar */
+  /* EMERGENCY AMBIENT LIGHTING (TRIGGERED ON ALARMS) */
+  .alarm-strobe {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 99;
+    opacity: 0;
+    background: radial-gradient(circle, transparent 40%, rgba(255, 26, 64, 0.35) 100%);
+    transition: opacity 0.3s;
+  }
+  .alarm-strobe.active {
+    animation: strobePulse 1s infinite alternate;
+  }
+  @keyframes strobePulse {
+    0% { opacity: 0.15; }
+    100% { opacity: 0.75; }
+  }
+
+  /* TOP METROPOLITAN POLICE SCANNER & TIMER HUD */
   header {
-    background: rgba(14, 19, 38, 0.85);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border-subtle);
-    padding: 14px 28px;
+    background: linear-gradient(180deg, #0e1322 0%, #080b15 100%);
+    border-bottom: 2px solid #232d47;
+    padding: 12px 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     position: sticky;
     top: 0;
     z-index: 100;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.6);
   }
 
-  .brand {
+  .brand-group {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
   }
-
-  .brand-logo {
-    width: 34px;
-    height: 34px;
-    border: 2px solid var(--cyan);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0, 240, 255, 0.1);
-    box-shadow: 0 0 16px var(--cyan-glow);
+  .brand-group svg {
+    width: 36px;
+    height: 36px;
+    filter: drop-shadow(0 0 10px var(--gold));
   }
-
-  .brand-logo svg {
-    width: 20px;
-    height: 20px;
-    fill: var(--cyan);
-  }
-
-  .brand-text h1 {
-    font-size: 1.15rem;
-    font-weight: 800;
+  .brand-title h1 {
+    font-family: var(--f-title);
+    font-size: 1.25rem;
+    font-weight: 900;
     letter-spacing: 0.08em;
     color: #fff;
     text-transform: uppercase;
   }
-
-  .brand-text span {
-    font-size: 0.72rem;
-    color: var(--cyan);
+  .brand-title span {
+    font-size: 0.74rem;
+    color: var(--gold);
     font-family: var(--f-mono);
-    letter-spacing: 0.12em;
+    letter-spacing: 0.1em;
   }
 
-  .stepper-nav {
+  /* POLICE DISPATCH ALERT TICKER */
+  .scanner-bar {
     display: flex;
     align-items: center;
-    gap: 8px;
-    background: var(--bg-surface);
-    padding: 6px 10px;
-    border-radius: 30px;
-    border: 1px solid var(--border-subtle);
-  }
-
-  .step-node {
+    gap: 10px;
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid #2a3552;
     padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 0.82rem;
+    border-radius: 6px;
+    font-family: var(--f-mono);
+    font-size: 0.8rem;
+    color: #ffd276;
+    max-width: 480px;
+  }
+  .scanner-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--laser-red);
+    border-radius: 50%;
+    animation: blip 0.8s infinite;
+  }
+  @keyframes blip { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+  /* POLICE RESPONSE CLOCK */
+  .police-countdown {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: #080a12;
+    border: 2px solid var(--laser-red);
+    border-radius: 8px;
+    padding: 6px 16px;
+    box-shadow: 0 0 16px var(--laser-glow);
+  }
+  .clock-label {
+    font-size: 0.7rem;
+    font-family: var(--f-title);
     font-weight: 700;
-    color: var(--text-muted);
-    border: 1px solid transparent;
-    cursor: pointer;
-    transition: all 0.25s ease;
+    color: var(--laser-red);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .clock-digital {
+    font-family: var(--f-mono);
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: 0.08em;
   }
 
-  .step-node.active {
-    background: var(--cyan);
-    color: var(--bg-base);
-    box-shadow: 0 0 12px var(--cyan-glow);
-  }
-
-  .step-node.completed {
-    color: var(--emerald);
-    background: rgba(0, 255, 163, 0.1);
-    border-color: rgba(0, 255, 163, 0.3);
-  }
-
-  /* Main Workspace Split-Screen */
+  /* WORKSPACE LAYOUT: SPLIT SCREEN (VAULT + LIVE QISKIT TERMINAL) */
   .workspace {
     flex: 1;
     display: grid;
-    grid-template-columns: 1fr 520px;
-    height: calc(100vh - 65px);
+    grid-template-columns: 1.25fr 0.75fr;
+    height: calc(100vh - 74px);
+  }
+  @media (max-width: 1100px) {
+    .workspace { grid-template-columns: 1fr; height: auto; }
+  }
+
+  /* LEFT VAULT CHAMBER */
+  .vault-chamber {
+    padding: 24px 30px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    position: relative;
+  }
+
+  /* LASER TRIPWIRE OVERLAY */
+  .laser-grid {
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 100%;
+    pointer-events: none;
+    z-index: 10;
     overflow: hidden;
   }
-
-  @media (max-width: 1100px) {
-    .workspace {
-      grid-template-columns: 1fr;
-      height: auto;
-      overflow: visible;
-    }
+  .laser-beam {
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--laser-red), transparent);
+    box-shadow: 0 0 10px var(--laser-red);
+    opacity: 0.5;
+    animation: laserScan 4s ease-in-out infinite alternate;
+  }
+  .laser-beam:nth-child(2) {
+    top: 35%;
+    animation-duration: 5.5s;
+    animation-direction: alternate-reverse;
+  }
+  .laser-beam:nth-child(3) {
+    top: 75%;
+    animation-duration: 3.8s;
+  }
+  @keyframes laserScan {
+    0% { transform: translateY(0px); opacity: 0.2; }
+    100% { transform: translateY(80px); opacity: 0.7; }
   }
 
-  .stage-pane {
-    overflow-y: auto;
-    padding: 32px;
+  /* OPERATIVE RADIO DIALOGUE PANEL */
+  .radio-comms {
+    background: var(--steel-mid);
+    border: 1px solid var(--steel-plate);
+    border-left: 5px solid var(--gold);
+    border-radius: 10px;
+    padding: 14px 18px;
     display: flex;
-    flex-direction: column;
-    gap: 24px;
-  }
-
-  .ide-pane {
-    background: #080b17;
-    border-left: 1px solid var(--border-subtle);
-    display: flex;
-    flex-direction: column;
-    position: relative;
-  }
-
-  /* Terminal & Code Header */
-  .ide-header {
-    background: var(--bg-surface);
-    padding: 14px 20px;
-    border-bottom: 1px solid var(--border-subtle);
-    display: flex;
-    justify-content: space-between;
+    gap: 14px;
     align-items: center;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.4);
   }
-
-  .ide-title {
+  .operative-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    border: 2px solid var(--gold);
+    background: rgba(255, 184, 0, 0.1);
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-family: var(--f-mono);
-    font-size: 0.82rem;
-    color: var(--text-secondary);
+    justify-content: center;
+    flex-shrink: 0;
   }
+  .operative-avatar svg { width: 28px; height: 28px; fill: var(--gold); }
+  .radio-text h4 {
+    font-family: var(--f-title);
+    font-size: 0.8rem;
+    color: var(--gold);
+    letter-spacing: 0.08em;
+  }
+  .radio-text p {
+    font-size: 1rem;
+    line-height: 1.45;
+    color: var(--text-bright);
+    margin-top: 2px;
+  }
+  .radio-text b { color: var(--cyan); }
 
-  .terminal-dots {
+  /* MISSION OBJECTIVE SIGNPOST */
+  .objective-banner {
+    background: linear-gradient(90deg, rgba(0, 240, 255, 0.15), rgba(255, 184, 0, 0.08));
+    border: 2px solid var(--cyan);
+    border-radius: 8px;
+    padding: 12px 18px;
     display: flex;
-    gap: 6px;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 0 15px var(--cyan-glow);
   }
+  .objective-banner svg { width: 24px; height: 24px; fill: var(--cyan); flex-shrink: 0; }
+  .objective-banner span { font-weight: 700; font-size: 1.05rem; }
 
-  .terminal-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-  }
-  .dot-red { background: #ff5f56; }
-  .dot-yellow { background: #ffbd2e; }
-  .dot-green { background: #27c93f; }
-
-  .ide-body {
-    flex: 1;
+  /* PHYSICAL VAULT DOOR INTERACTIVE VIEW */
+  .vault-door-stage {
+    background: radial-gradient(circle at 50% 50%, #1e263d 0%, #0d1220 100%);
+    border: 3px solid var(--steel-plate);
+    border-radius: 16px;
     padding: 24px;
-    overflow-y: auto;
-    font-family: var(--f-mono);
-    font-size: 0.95rem;
-    line-height: 1.7;
-    color: #c9d1d9;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.8), 0 10px 30px rgba(0,0,0,0.6);
     position: relative;
   }
 
-  .code-line {
+  /* 3D ROTATING COMBINATION TUMBLER / COIN */
+  .coin-tumbler-wrap {
+    perspective: 1000px;
     display: flex;
-    gap: 18px;
-    margin-bottom: 3px;
-    transition: background 0.2s;
-    border-radius: 4px;
-    padding: 2px 6px;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .coin-disc {
+    width: 130px;
+    height: 130px;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .coin-disc.spinning {
+    animation: coinSpin3D 0.35s linear infinite;
+  }
+  @keyframes coinSpin3D {
+    0% { transform: rotateY(0deg); }
+    100% { transform: rotateY(360deg); }
+  }
+  .coin-face {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--f-title);
+    font-weight: 900;
+    font-size: 1.35rem;
+    border: 6px solid #fff;
+    box-shadow: 0 0 30px var(--gold-glow), inset 0 0 20px rgba(0,0,0,0.6);
+  }
+  .coin-heads {
+    background: radial-gradient(circle at 35% 35%, #fff1a8, #ffb800 65%, #8c5700);
+    color: #2b1700;
+  }
+  .coin-tails {
+    background: radial-gradient(circle at 35% 35%, #b6f8ff, #00c8ff 65%, #004d66);
+    color: #002330;
+    transform: rotateY(180deg);
   }
 
-  .code-line.highlight {
-    background: rgba(0, 240, 255, 0.12);
-    border-left: 3px solid var(--cyan);
+  /* PHYSICAL VAULT DEPOSIT BOXES (BRUSHED STEEL WITH HEAVY HANDLES) */
+  .safe-matrix {
+    display: grid;
+    gap: 14px;
+    width: 100%;
+    max-width: 520px;
+  }
+  .deposit-box {
+    aspect-ratio: 1;
+    background: linear-gradient(145deg, #1b2438, #0e1422);
+    border: 2px solid #2d3b5e;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-family: var(--f-mono);
+    font-size: 1.1rem;
+    font-weight: 700;
+    position: relative;
+    box-shadow: inset 0 2px 4px rgba(255,255,255,0.08), 0 4px 10px rgba(0,0,0,0.5);
+    transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .deposit-box:hover:not(.empty):not(.cracked) {
+    border-color: var(--cyan);
+    transform: translateY(-2px);
+    box-shadow: 0 0 16px var(--cyan-glow);
+  }
+  .deposit-box.empty {
+    background: rgba(255, 26, 64, 0.12);
+    border-color: var(--laser-red);
+    color: var(--laser-red);
+  }
+  .deposit-box.spinning-quantum {
+    background: radial-gradient(circle, rgba(0, 240, 255, 0.28) 0%, rgba(14, 20, 34, 0.9) 100%);
+    border-color: var(--cyan);
+    box-shadow: 0 0 22px var(--cyan-glow);
+    animation: quantumGlow 1.4s infinite alternate;
+  }
+  @keyframes quantumGlow {
+    0% { transform: scale(0.98); }
+    100% { transform: scale(1.03); filter: drop-shadow(0 0 12px var(--cyan)); }
+  }
+  .deposit-box.cracked {
+    background: radial-gradient(circle, rgba(0, 255, 163, 0.4) 0%, rgba(14, 20, 34, 0.9) 100%);
+    border-color: var(--emerald);
+    color: #fff;
+    box-shadow: 0 0 40px var(--emerald-glow);
+    transform: scale(1.06);
   }
 
-  .line-num {
-    color: var(--text-muted);
-    user-select: none;
-    min-width: 24px;
-    text-align: right;
+  /* NOISE CANCELLING OSCILLOSCOPE */
+  .oscilloscope-box {
+    width: 100%;
+    background: #04070f;
+    border: 2px solid var(--steel-plate);
+    border-radius: 12px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.9);
   }
-
-  .line-content {
-    flex: 1;
-    white-space: pre-wrap;
-  }
-
-  /* Syntax Highlighting */
-  .kw { color: #ff7b72; font-weight: 600; }
-  .fn { color: #d2a8ff; font-weight: 600; }
-  .str { color: #a5d6ff; }
-  .num { color: #79c0ff; }
-  .cmt { color: #8b949e; font-style: italic; }
-  .var { color: #ffa657; }
-  .q-op { color: var(--emerald); font-weight: 700; }
-
-  .ide-status-bar {
-    background: var(--bg-surface);
-    border-top: 1px solid var(--border-subtle);
-    padding: 10px 20px;
+  .oscilloscope-header {
     display: flex;
     justify-content: space-between;
     font-family: var(--f-mono);
     font-size: 0.76rem;
-    color: var(--text-muted);
+    color: var(--text-dim);
+  }
+  canvas#scopeCanvas {
+    width: 100%;
+    height: 125px;
+    border-radius: 6px;
+    background: #020409;
   }
 
-  .compilation-status {
+  /* ROTARY DIAL MECHANISM */
+  .rotary-panel {
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: space-between;
+    width: 100%;
+    background: var(--steel-mid);
+    border: 2px solid var(--steel-plate);
+    padding: 16px 22px;
+    border-radius: 12px;
   }
-
-  .status-indicator {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--emerald);
-    box-shadow: 0 0 8px var(--emerald-glow);
-  }
-
-  /* Mission Transmission Card */
-  .transmission-card {
-    background: var(--bg-surface);
-    border: 1px solid var(--border-subtle);
-    border-radius: 16px;
-    padding: 22px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .transmission-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; width: 4px; height: 100%;
-    background: var(--cyan);
-  }
-
-  .comm-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 12px;
-  }
-
-  .agent-avatar {
-    width: 44px;
-    height: 44px;
-    border-radius: 10px;
-    border: 1px solid var(--cyan);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0, 240, 255, 0.08);
-  }
-
-  .agent-avatar svg {
-    width: 26px;
-    height: 26px;
-    fill: var(--cyan);
-  }
-
-  .agent-meta h3 {
-    font-size: 0.98rem;
-    font-weight: 800;
-    letter-spacing: 0.05em;
+  .dial-meta h4 {
+    font-family: var(--f-title);
+    font-size: 1rem;
     color: #fff;
     text-transform: uppercase;
   }
-
-  .agent-meta p {
-    font-size: 0.76rem;
-    color: var(--text-secondary);
+  .dial-meta p {
+    font-size: 0.78rem;
+    color: var(--text-dim);
     font-family: var(--f-mono);
   }
-
-  .comm-body {
-    font-size: 1.05rem;
-    line-height: 1.6;
-    color: var(--text-primary);
-  }
-
-  .comm-body b {
-    color: var(--cyan);
-  }
-
-  /* Vault Physical Stage */
-  .interactive-vault {
-    background: var(--bg-surface);
-    border: 1px solid var(--border-subtle);
-    border-radius: 16px;
-    padding: 26px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  .vault-status-panel {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: var(--bg-base);
-    border: 1px solid var(--border-subtle);
-    padding: 14px 20px;
-    border-radius: 12px;
-  }
-
-  .status-cluster {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .status-cluster .label {
-    font-size: 0.72rem;
-    font-family: var(--f-mono);
-    text-transform: uppercase;
-    color: var(--text-muted);
-    letter-spacing: 0.08em;
-  }
-
-  .status-cluster .value {
-    font-size: 1.35rem;
-    font-weight: 800;
-    font-family: var(--f-mono);
-  }
-
-  .val-cyan { color: var(--cyan); }
-  .val-emerald { color: var(--emerald); }
-  .val-crimson { color: var(--crimson); }
-
-  /* Lock Matrix */
-  .vault-matrix-wrap {
-    background: #090d1a;
-    border: 1px solid var(--border-subtle);
-    border-radius: 12px;
-    padding: 20px;
-    min-height: 180px;
+  .rotary-wheel {
     display: flex;
     align-items: center;
-    justify-content: center;
-    position: relative;
+    gap: 16px;
   }
-
-  .vault-grid {
-    display: grid;
-    gap: 12px;
-    width: 100%;
-    max-width: 480px;
-  }
-
-  .vault-tumbler {
-    aspect-ratio: 1;
-    background: var(--bg-surface);
-    border: 2px solid var(--border-subtle);
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-family: var(--f-mono);
+  .rotary-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    border: 2px solid var(--steel-plate);
+    background: var(--steel-light);
+    color: #fff;
+    font-size: 1.4rem;
     font-weight: 700;
-    font-size: 1.1rem;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    position: relative;
-    user-select: none;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .rotary-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .rotary-number {
+    font-family: var(--f-mono);
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--gold);
+    min-width: 44px;
+    text-align: center;
   }
 
-  .vault-tumbler:hover {
-    border-color: var(--border-bright);
-    transform: translateY(-2px);
-  }
-
-  .vault-tumbler.superposed {
-    background: radial-gradient(circle, rgba(0, 240, 255, 0.22) 0%, rgba(14, 19, 38, 0.8) 100%);
-    border-color: var(--cyan);
-    box-shadow: 0 0 16px var(--cyan-glow);
-    animation: superposeFloat 2s ease-in-out infinite alternate;
-  }
-
-  @keyframes superposeFloat {
-    0% { transform: scale(0.97); filter: hue-rotate(0deg); }
-    100% { transform: scale(1.03); filter: hue-rotate(40deg); }
-  }
-
-  .vault-tumbler.cracked {
-    background: rgba(0, 255, 163, 0.25);
-    border-color: var(--emerald);
-    color: var(--emerald);
-    box-shadow: 0 0 24px var(--emerald-glow);
-    transform: scale(1.05);
-  }
-
-  .vault-tumbler.empty {
-    opacity: 0.35;
-    background: rgba(255, 51, 102, 0.1);
-    border-color: var(--crimson);
-  }
-
-  /* Wave Interference Canvas */
-  .canvas-container {
-    background: #050711;
-    border: 1px solid var(--border-subtle);
-    border-radius: 12px;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .canvas-container header {
-    background: transparent;
-    padding: 0;
+  /* PRIMARY ACTION TRIGGER */
+  .heist-btn {
+    background: linear-gradient(135deg, var(--cyan), #0088ff);
     border: none;
-  }
-
-  canvas {
-    width: 100%;
-    height: 140px;
-    border-radius: 6px;
-  }
-
-  /* Operator Action Blocks / Controls */
-  .quantum-deck {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
-
-  .deck-title {
-    font-size: 0.84rem;
-    font-family: var(--f-mono);
-    text-transform: uppercase;
-    color: var(--text-secondary);
+    color: #030814;
+    font-family: var(--f-title);
+    font-weight: 900;
+    font-size: 1.15rem;
     letter-spacing: 0.06em;
-  }
-
-  .command-strip {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 12px;
-  }
-
-  .cmd-btn {
-    background: var(--bg-surface-elevated);
-    border: 1px solid var(--border-bright);
-    color: var(--text-primary);
-    padding: 16px 18px;
-    border-radius: 12px;
-    font-family: var(--f-sans);
-    font-size: 0.96rem;
-    font-weight: 700;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
+    text-transform: uppercase;
+    padding: 16px 28px;
+    border-radius: 10px;
     cursor: pointer;
-    transition: all 0.2s ease;
-    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    box-shadow: 0 0 25px var(--cyan-glow);
+    transition: all 0.2s;
   }
-
-  .cmd-btn:hover:not(:disabled) {
-    background: var(--border-bright);
-    border-color: var(--cyan);
+  .heist-btn:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    box-shadow: 0 0 35px var(--cyan-glow);
   }
-
-  .cmd-btn:disabled {
+  .heist-btn:disabled {
     opacity: 0.35;
     cursor: not-allowed;
     filter: grayscale(1);
   }
-
-  .cmd-btn .cmd-tag {
-    font-family: var(--f-mono);
-    font-size: 0.7rem;
-    color: var(--cyan);
-    letter-spacing: 0.06em;
+  .btn-gold {
+    background: linear-gradient(135deg, var(--gold), #ff7700);
+    color: #1a0f00;
+    box-shadow: 0 0 25px var(--gold-glow);
+  }
+  .btn-gold:hover:not(:disabled) {
+    box-shadow: 0 0 35px var(--gold-glow);
   }
 
-  .cmd-btn.action-primary {
-    background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(0, 255, 163, 0.2));
-    border-color: var(--cyan);
-  }
-
-  .cmd-btn.action-primary:hover:not(:disabled) {
-    background: linear-gradient(135deg, rgba(0, 240, 255, 0.35), rgba(0, 255, 163, 0.35));
-    box-shadow: 0 0 20px var(--cyan-glow);
-  }
-
-  .dial-control {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--bg-base);
-    border: 1px solid var(--border-subtle);
-    border-radius: 12px;
-    padding: 12px 18px;
-  }
-
-  .dial-label {
+  /* RIGHT CYBER-TERMINAL (LIVE COMPILING IDE) */
+  .terminal-chamber {
+    background: #060912;
+    border-left: 2px solid var(--steel-plate);
     display: flex;
     flex-direction: column;
   }
-
-  .dial-label span {
-    font-size: 0.94rem;
-    font-weight: 700;
-  }
-
-  .dial-label small {
-    font-size: 0.74rem;
-    color: var(--text-muted);
-    font-family: var(--f-mono);
-  }
-
-  .dial-stepper {
+  .terminal-top {
+    background: #0c111e;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--steel-plate);
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 12px;
-  }
-
-  .dial-stepper button {
-    width: 38px;
-    height: 38px;
-    border-radius: 8px;
-    border: 1px solid var(--border-bright);
-    background: var(--bg-surface-elevated);
-    color: var(--text-primary);
-    font-size: 1.2rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .dial-stepper button:hover {
-    border-color: var(--cyan);
-    color: var(--cyan);
-  }
-
-  .dial-value {
     font-family: var(--f-mono);
-    font-size: 1.3rem;
-    font-weight: 800;
-    color: var(--amber);
-    min-width: 32px;
-    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-dim);
   }
+  .top-dots { display: flex; gap: 6px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #ff5f56; }
+  .dot-y { background: #ffbd2e; }
+  .dot-g { background: #27c93f; }
 
-  /* Certificate Plenary */
-  .cert-modal {
+  .terminal-code {
+    flex: 1;
+    padding: 22px;
+    overflow-y: auto;
+    font-family: var(--f-mono);
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: #cad3f5;
+  }
+  .code-line { display: flex; gap: 14px; padding: 2px 4px; border-radius: 4px; }
+  .code-line.active { background: rgba(0, 240, 255, 0.15); border-left: 3px solid var(--cyan); }
+  .line-no { color: #445175; min-width: 26px; text-align: right; user-select: none; }
+  .line-txt { flex: 1; white-space: pre-wrap; }
+
+  /* CODE SYNTAX COLORS */
+  .c-kw { color: #ff7b72; font-weight: 700; }
+  .c-fn { color: #d2a8ff; font-weight: 700; }
+  .c-num { color: #79c0ff; }
+  .c-cmt { color: #768390; font-style: italic; }
+  .c-qop { color: #00ffa3; font-weight: 700; }
+
+  /* JAW-DROPPING CLEARANCE DOSSIER MODAL */
+  .dossier-modal {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(4, 6, 14, 0.9);
-    backdrop-filter: blur(14px);
+    background: rgba(2, 4, 10, 0.95);
+    backdrop-filter: blur(18px);
     z-index: 200;
-    padding: 30px;
     align-items: center;
     justify-content: center;
+    padding: 24px;
     overflow-y: auto;
   }
-
-  .cert-card {
-    background: #0a0e1c;
-    border: 2px solid var(--cyan);
-    box-shadow: 0 0 50px rgba(0, 240, 255, 0.25);
-    border-radius: 20px;
+  .dossier-box {
+    background: #090e1c;
+    border: 2px solid var(--gold);
+    box-shadow: 0 0 60px rgba(255, 184, 0, 0.4);
+    border-radius: 16px;
+    max-width: 720px;
     width: 100%;
-    max-width: 680px;
-    padding: 36px;
+    padding: 40px;
+    text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
-    text-align: center;
-    gap: 20px;
-    position: relative;
+    gap: 22px;
   }
-
-  .cert-badge {
-    width: 72px;
-    height: 72px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--cyan), var(--emerald));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 0 30px var(--cyan-glow);
-  }
-
-  .cert-badge svg {
-    width: 40px;
-    height: 40px;
-    fill: #060913;
-  }
-
-  .cert-title h2 {
-    font-size: 1.6rem;
-    font-weight: 900;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: #fff;
-  }
-
-  .cert-title p {
-    color: var(--cyan);
-    font-family: var(--f-mono);
-    font-size: 0.86rem;
-    letter-spacing: 0.1em;
-  }
-
-  .cert-stats {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-    width: 100%;
-    margin: 10px 0;
-  }
-
-  .cert-stat-box {
-    background: var(--bg-surface);
-    border: 1px solid var(--border-subtle);
-    border-radius: 10px;
-    padding: 14px;
-  }
-
-  .cert-stat-box .num {
-    font-family: var(--f-mono);
-    font-size: 1.4rem;
-    font-weight: 800;
+  .dossier-stamp {
+    font-family: var(--f-title);
+    border: 3px solid var(--emerald);
     color: var(--emerald);
+    font-size: 1.1rem;
+    font-weight: 900;
+    padding: 4px 18px;
+    border-radius: 4px;
+    transform: rotate(-3deg);
+    letter-spacing: 0.15em;
   }
-
-  .cert-stat-box .lbl {
-    font-size: 0.74rem;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-top: 4px;
-  }
-
-  .cert-summary {
-    font-size: 0.98rem;
-    line-height: 1.6;
-    color: var(--text-primary);
-  }
-
-  .cert-summary b {
-    color: var(--amber);
-  }
-
-  .gawk-callout {
-    background: rgba(255, 180, 0, 0.08);
-    border: 1px dashed var(--amber);
+  .scale-race-container {
+    width: 100%;
+    background: #050811;
+    border: 1px solid #232d47;
     border-radius: 10px;
-    padding: 14px 18px;
-    font-size: 0.88rem;
-    line-height: 1.5;
-    color: #ffd276;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .race-lane {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
     text-align: left;
   }
-
-  /* Sound & Action Buttons */
-  .btn-gold {
-    background: linear-gradient(135deg, var(--amber), #ff8400);
-    border: none;
-    color: #1a0f00;
-    font-weight: 800;
-    font-size: 1.05rem;
-    padding: 14px 28px;
-    border-radius: 12px;
-    cursor: pointer;
-    box-shadow: 0 0 20px var(--amber-glow);
-    transition: all 0.2s;
+  .lane-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    font-family: var(--f-mono);
   }
-
-  .btn-gold:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 0 30px var(--amber-glow);
+  .lane-track {
+    height: 16px;
+    background: #121829;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
   }
+  .lane-fill {
+    height: 100%;
+    width: 0%;
+    transition: width 1s cubic-bezier(0.1, 0.9, 0.2, 1);
+  }
+  .fill-classical { background: linear-gradient(90deg, #ff1a40, #ff7b72); }
+  .fill-quantum { background: linear-gradient(90deg, #00ffa3, #00f0ff); width: 100%; }
+
+  .global-rarity-callout {
+    background: rgba(255, 184, 0, 0.1);
+    border: 1px dashed var(--gold);
+    border-radius: 10px;
+    padding: 18px 22px;
+    text-align: left;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #ffe4a0;
+  }
+  .global-rarity-callout b { color: #fff; text-decoration: underline; }
 </style>
 </head>
 <body>
 
+<div class="alarm-strobe" id="alarmStrobe"></div>
+
+<!-- POLICE SCANNER & TIMER HUD -->
 <header>
-  <div class="brand">
-    <div class="brand-logo">
-      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
-    </div>
-    <div class="brand-text">
-      <h1>Operation Superposition</h1>
-      <span>QUANTUM CIRCUIT TERMINAL v4.2</span>
+  <div class="brand-group">
+    <svg viewBox="0 0 24 24"><path fill="#ffb800" d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.46 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+    <div class="brand-title">
+      <h1>Operation Koh-I-Noor</h1>
+      <span>CENTRAL DEPOSITORY INFILTRATION</span>
     </div>
   </div>
 
-  <nav class="stepper-nav">
-    <div class="step-node active" id="stepNode1" onclick="switchMission(1)">1. Superposition</div>
-    <div class="step-node" id="stepNode2" onclick="switchMission(2)">2. The Sequence</div>
-    <div class="step-node" id="stepNode3" onclick="switchMission(3)">3. The Grover Loop</div>
-    <div class="step-node" id="stepNode4" onclick="openCert()">4. Debrief</div>
-  </nav>
+  <div class="scanner-bar">
+    <div class="scanner-dot"></div>
+    <span id="scannerText">POLICE SCANNER: "Silent trip wire registered on Level 4. All units converge..."</span>
+  </div>
+
+  <div class="police-countdown">
+    <div class="clock-label">Police ETA:</div>
+    <div class="clock-digital" id="policeClock">03:00</div>
+  </div>
 </header>
 
 <div class="workspace">
-  <!-- Left Column: Operations and Narrative HUD -->
-  <main class="stage-pane">
-    <div class="transmission-card">
-      <div class="comm-header">
-        <div class="agent-avatar">
-          <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-        </div>
-        <div class="agent-meta">
-          <h3 id="commAgent">AGENT VALE // INFILTRATION LEAD</h3>
-          <p id="commSub">ENCRYPTED CHANNEL SECURED // TIMELINE: 30 MIN WINDOW</p>
-        </div>
+  <!-- LEFT: VAULT INFILTRATION CHAMBER -->
+  <main class="vault-chamber">
+    <!-- Laser Tripwires -->
+    <div class="laser-grid">
+      <div class="laser-beam"></div>
+      <div class="laser-beam"></div>
+      <div class="laser-beam"></div>
+    </div>
+
+    <!-- Comms Briefing -->
+    <div class="radio-comms">
+      <div class="operative-avatar">
+        <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
       </div>
-      <div class="comm-body" id="commText">
-        Welcome to the team. Traditional brute-force computing is dead. An ordinary computer checks combination tumblers <b>one single box at a time</b>. Today, you are writing an algorithm in Qiskit to test all safe configurations in <b>a single tick of the clock</b>.
+      <div class="radio-text">
+        <h4 id="agentName">VALE // MASTER SAFECRACKER</h4>
+        <p id="commsMsg">Loading transmission...</p>
       </div>
     </div>
 
-    <!-- Active Vault Mechanism Display -->
-    <div class="interactive-vault">
-      <div class="vault-status-panel">
-        <div class="status-cluster">
-          <span class="label">Vault Register</span>
-          <span class="value val-cyan" id="dispQubits">2 Qubits</span>
-        </div>
-        <div class="status-cluster">
-          <span class="label">States in Superposition</span>
-          <span class="value val-amber" id="dispCombinations">4 Combinations</span>
-        </div>
-        <div class="status-cluster">
-          <span class="label">Confidence Level</span>
-          <span class="value val-emerald" id="dispConfidence">0%</span>
-        </div>
-      </div>
+    <!-- Direct Objective Signpost -->
+    <div class="objective-banner">
+      <svg viewBox="0 0 24 24"><path d="M12 2L1 21h22L12 2zm0 3.99L19.53 19H4.47L12 5.99zM11 16h2v2h-2zm0-6h2v4h-2z"/></svg>
+      <span id="objectiveText">Initialize operation.</span>
+    </div>
 
-      <div class="vault-matrix-wrap">
-        <div class="vault-grid" id="vaultGrid" style="grid-template-columns: repeat(2, 1fr);">
-          <!-- Tumblers will render dynamically -->
-        </div>
-      </div>
-
-      <!-- Wave Cancellation Canvas: The "Noise Cancelling Headphones" concept -->
-      <div class="canvas-container">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <span class="deck-title">Wave Interference Monitor (Noise Cancelling Scope)</span>
-          <small style="color:var(--cyan); font-family:var(--f-mono);">Target Signal vs Background Noise</small>
-        </div>
-        <canvas id="scopeCanvas"></canvas>
-      </div>
-
-      <!-- Live Interactive Controls -->
-      <div class="quantum-deck">
-        <span class="deck-title">Quantum Operators Assembly</span>
-
-        <div class="command-strip" id="cmdStrip">
-          <!-- Dynamically customized per stage -->
-        </div>
-
-        <div class="dial-control" id="loopControl" style="display:none;">
-          <div class="dial-label">
-            <span>Interference Loop Count (Grover Iterations)</span>
-            <small>Adjust iterations to achieve 100% constructive interference</small>
-          </div>
-          <div class="dial-stepper">
-            <button onclick="adjustLoop(-1)">−</button>
-            <span class="dial-value" id="loopValue">1</span>
-            <button onclick="adjustLoop(1)">+</button>
-          </div>
-        </div>
-      </div>
+    <!-- Physical Interactive Vault -->
+    <div class="vault-door-stage" id="vaultStage">
+      <!-- Injected by stage engine -->
     </div>
   </main>
 
-  <!-- Right Column: Live Executable Python IDE -->
-  <aside class="ide-pane">
-    <div class="ide-header">
-      <div class="ide-title">
-        <div class="terminal-dots">
-          <div class="terminal-dot dot-red"></div>
-          <div class="terminal-dot dot-yellow"></div>
-          <div class="terminal-dot dot-green"></div>
-        </div>
-        <span>quantum_heist.py [Qiskit 1.2]</span>
+  <!-- RIGHT: REAL PYTHON QISKIT TERMINAL -->
+  <aside class="terminal-chamber">
+    <div class="terminal-top">
+      <div class="top-dots">
+        <div class="dot dot-r"></div>
+        <div class="dot dot-y"></div>
+        <div class="dot dot-g"></div>
       </div>
-      <button class="cmd-btn action-primary" id="btnExecuteCode" style="padding:6px 14px; font-size:0.8rem;" onclick="runQuantumExecution()">
-        ▶ COMPILE & RUN
-      </button>
+      <span>vault_crack_algorithm.py [Qiskit Engine]</span>
+      <span style="color:var(--emerald);">● IBM FALCON QPU</span>
     </div>
 
-    <div class="ide-body" id="codeIDE">
-      <!-- Live code rendered here with typing animation and line highlights -->
-    </div>
-
-    <div class="ide-status-bar">
-      <div class="compilation-status">
-        <div class="status-indicator" id="compilerIndicator"></div>
-        <span id="compilerText">Kernel: IBM Falcon Quantum Processor Ready</span>
-      </div>
-      <span>UTF-8 // Python 3.12</span>
+    <div class="terminal-code" id="terminalCode">
+      <!-- Typed code streams live -->
     </div>
   </aside>
 </div>
 
-<!-- Mission Clearance Certificate Plenary -->
-<div class="cert-modal" id="certModal">
-  <div class="cert-card">
-    <div class="cert-badge">
-      <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.46 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
-    </div>
-    <div class="cert-title">
-      <h2>Certificate of Quantum Competency</h2>
-      <p>VALIDATED BY QUANTUM CYBER INFILTRATION GROUP</p>
-    </div>
+<!-- JAW-DROPPING CLEARANCE CERTIFICATE MODAL -->
+<div class="dossier-modal" id="dossierModal">
+  <div class="dossier-box">
+    <div class="dossier-stamp">TOP SECRET // MISSION SUCCESS</div>
+    <h2 style="font-family:var(--f-title); font-size:2rem; letter-spacing:0.05em; color:#fff;">OPERATION COMPLETE: KOH-I-NOOR EXTRACTED</h2>
+    <p style="color:var(--gold); font-family:var(--f-mono); font-size:0.88rem;">VAULT EMPTIED IN UNDER 3 MINUTES BEFORE POLICE ARRIVAL</p>
 
-    <div class="cert-stats">
-      <div class="cert-stat-box">
-        <div class="num" id="certQubits">6 Qubits</div>
-        <div class="lbl">Hardware Register Controlled</div>
+    <!-- Supercomputer Scale Race Comparison -->
+    <div class="scale-race-container">
+      <div class="race-lane">
+        <div class="lane-label">
+          <span>Ordinary Supercomputer (1,000,000 Safe Combinations)</span>
+          <span style="color:var(--laser-red);">~500,000 Checks [EST. 3.5 DAYS]</span>
+        </div>
+        <div class="lane-track"><div class="lane-fill fill-classical" style="width:1.5%;"></div></div>
       </div>
-      <div class="cert-stat-box">
-        <div class="num" id="certComplexity">O(√N) Speedup</div>
-        <div class="lbl">Algorithmic Advantage</div>
+      <div class="race-lane">
+        <div class="lane-label">
+          <span>Your Quantum Grover Circuit (1,000,000 Combinations)</span>
+          <span style="color:var(--emerald);">1,000 Operations [0.02 SECONDS]</span>
+        </div>
+        <div class="lane-track"><div class="lane-fill fill-quantum"></div></div>
       </div>
     </div>
 
-    <div class="cert-summary">
-      You came in with zero programming experience. In less than 30 minutes, you constructed and executed a real, multi-stage quantum algorithm (<b>Grover's Search</b>) utilizing <b>superposition</b>, <b>phase-inversion</b>, and <b>constructive wave amplification</b>.
+    <div class="global-rarity-callout">
+      🌍 <b>Look Open-Mouthed at What You Just Did:</b><br>
+      There are <b>8.1 billion people</b> on Earth. Fewer than <b>0.005%</b> will ever write or comprehend a working quantum computing algorithm in their lifetime. 30 minutes ago, you had zero programming experience. Right now, you just compiled and executed a true <b>Grover Amplitude Amplification</b> algorithm to crack a safe in 1 single shot. You are officially in that rare 0.005%.
     </div>
 
-    <div class="gawk-callout">
-      💡 <b>The Abacus Reality Check:</b> If this vault were secured with 1,000,000 combinations, a classical supercomputer checking each one sequentially takes an average of <b>500,000 checks</b>. Your quantum code solves that same problem in approximately <b>1,000 operations</b>. You just coded something that renders everyday computing obsolete.
-    </div>
-
-    <button class="btn-gold" onclick="copyCertReport()">📋 COPY MISSION REPORT & SHARE</button>
-    <button style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.86rem;" onclick="closeCert()">Close Dashboard</button>
+    <button class="heist-btn btn-gold" style="width:100%;" onclick="copyOperativeDossier()">📋 COPY CLASSIFIED MISSION DOSSIER</button>
+    <button style="background:none; border:none; color:var(--text-dim); cursor:pointer; font-size:0.86rem;" onclick="closeDossier()">Review Vault Security Logs</button>
   </div>
 </div>
 
 <script>
-/* =========================================================
-   AUDIO SYNTHESIZER (No external audio files required)
-   ========================================================= */
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-function playTone(freq, type = 'sine', duration = 0.15, vol = 0.1) {
+/* =========================================================================
+   SYNTHESIZED HEIST AUDIO ENGINE (Sirens, Tumbler Clicks, Bass Drops)
+   ========================================================================= */
+const ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+function playSound(freq, type="sine", duration=0.15, vol=0.1) {
   try {
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
+    const osc = ctx.createOscillator(), gain = ctx.createGain();
     osc.type = type;
-    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-    gain.gain.setValueAtTime(vol, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    gain.gain.setValueAtTime(vol, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
     osc.connect(gain);
-    gain.connect(audioCtx.destination);
+    gain.connect(ctx.destination);
     osc.start();
-    osc.stop(audioCtx.currentTime + duration);
+    osc.stop(ctx.currentTime + duration);
   } catch(e) {}
 }
-function soundClick() { playTone(800, 'triangle', 0.05, 0.05); }
-function soundSuperposition() { playTone(300, 'sine', 0.4, 0.15); setTimeout(()=>playTone(600, 'sine', 0.5, 0.12), 100); }
-function soundSuccess() { playTone(440, 'sine', 0.1, 0.1); setTimeout(()=>playTone(880, 'triangle', 0.35, 0.15), 120); }
 
-/* =========================================================
-   STATE MANAGEMENT
-   ========================================================= */
-let currentMission = 1;
-let vaultSize = 4;
-let targetSecret = 2;
-let hasSuperposition = false;
-let hasOracle = false;
-let hasAmplifier = false;
-let loopIterations = 1;
-let optimalLoops = 1;
-
-// Code template structures for Python/Qiskit output
-const CODE_STEPS = {
-  header: [
-    { text: "from qiskit import QuantumCircuit, assemble, Aer", cls: "kw" },
-    { text: "# Initialize simulated quantum processing unit", cls: "cmt" },
-    { text: "sim = Aer.get_backend('qasm_simulator')", cls: "var" },
-    { text: "", cls: "" }
-  ],
-  superposition: [
-    { text: "# 1. SUPERPOSITION: Spin every coin at once", cls: "cmt" },
-    { text: "qc.h(range(n_qubits))", cls: "q-op", highlight: true }
-  ],
-  oracle: [
-    { text: "# 2. TARGET IDENTIFICATION: Invert phase of combination", cls: "cmt" },
-    { text: "qc.cz(0, 1)  # Phase Oracle Inversion", cls: "q-op", highlight: true }
-  ],
-  amplifier: [
-    { text: "# 3. CONSTRUCTIVE INTERFERENCE: Amplify target frequency", cls: "cmt" },
-    { text: "qc.h(range(n_qubits))", cls: "q-op" },
-    { text: "qc.x(range(n_qubits))", cls: "q-op" },
-    { text: "qc.h(1)", cls: "q-op" },
-    { text: "qc.cx(0, 1)", cls: "q-op" },
-    { text: "qc.h(1)", cls: "q-op" },
-    { text: "qc.x(range(n_qubits))", cls: "q-op" },
-    { text: "qc.h(range(n_qubits))", cls: "q-op", highlight: true }
-  ],
-  measure: [
-    { text: "# Measure register to extract solution", cls: "cmt" },
-    { text: "qc.measure_all()", cls: "fn" }
-  ]
-};
-
-/* =========================================================
-   MISSION LOGIC
-   ========================================================= */
-function switchMission(missionNum) {
-  currentMission = missionNum;
-  soundClick();
-  
-  document.querySelectorAll('.step-node').forEach((node, idx) => {
-    node.classList.toggle('active', (idx + 1) === missionNum);
-  });
-
-  hasSuperposition = false;
-  hasOracle = false;
-  hasAmplifier = false;
-
-  const commText = document.getElementById('commText');
-  const cmdStrip = document.getElementById('cmdStrip');
-  const loopControl = document.getElementById('loopControl');
-  loopControl.style.display = 'none';
-
-  if (missionNum === 1) {
-    vaultSize = 4;
-    targetSecret = 2;
-    document.getElementById('dispQubits').textContent = "2 Qubits";
-    document.getElementById('dispCombinations').textContent = "4 Combinations";
-    commText.innerHTML = "<b>MISSION 1 // THE SPINNING COIN:</b> A normal computer switch is flat: 0 (Heads) or 1 (Tails). We are applying a <b>Hadamard gate [qc.h]</b>. It spins all switches on edge. They aren't 'one or the other' in secret; they are simultaneously both!";
-    
-    cmdStrip.innerHTML = `
-      <button class="cmd-btn action-primary" onclick="injectSuperposition()">
-        <span class="cmd-tag">QUANTUM GATE // qc.h()</span>
-        Apply Superposition
-      </button>
-    `;
-  } else if (missionNum === 2) {
-    vaultSize = 4;
-    targetSecret = 1;
-    hasSuperposition = true;
-    document.getElementById('dispQubits').textContent = "2 Qubits";
-    document.getElementById('dispCombinations').textContent = "4 Combinations";
-    commText.innerHTML = "<b>MISSION 2 // NOISE CANCELLATION:</b> Spinning coins give an equal 25% chance per box. Now we code a <b>Sequence</b>: First, mark the target with phase flip, then execute the <b>Amplifier</b> to cancel out wrong answers!";
-    
-    cmdStrip.innerHTML = `
-      <button class="cmd-btn" id="btnOracle" onclick="injectOracle()">
-        <span class="cmd-tag">PHASE GATE // qc.cz()</span>
-        1. Lock Target Phase
-      </button>
-      <button class="cmd-btn" id="btnAmplifier" onclick="injectAmplifier()" disabled>
-        <span class="cmd-tag">INTERFERENCE // Diffuser</span>
-        2. Amplify Correct Signal
-      </button>
-    `;
-  } else if (missionNum === 3) {
-    vaultSize = 16;
-    targetSecret = 11;
-    optimalLoops = 3;
-    loopIterations = 1;
-    hasSuperposition = true;
-    hasOracle = true;
-    hasAmplifier = true;
-    document.getElementById('dispQubits').textContent = "4 Qubits";
-    document.getElementById('dispCombinations').textContent = "16 Combinations";
-    loopControl.style.display = 'flex';
-    commText.innerHTML = "<b>MISSION 3 // THE GROVER LOOP:</b> The vault size is quadrupled to 16 boxes. A single amplification pass is no longer enough. Programmers use a <b>Counted Loop</b> to repeat the constructive interference until the wave hits 100%!";
-    
-    cmdStrip.innerHTML = `
-      <button class="cmd-btn action-primary" onclick="runQuantumExecution()">
-        <span class="cmd-tag">EXECUTE LOOP // for _ in range()</span>
-        Run Iteration Loop
-      </button>
-    `;
-  }
-
-  renderVaultGrid();
-  renderCodeIDE();
-  drawScopeCanvas();
+function sfxClick() { playSound(1200, "triangle", 0.04, 0.05); }
+function sfxHeavyTumbler() { playSound(140, "sine", 0.15, 0.2); }
+function sfxAlarm() {
+  playSound(440, "sawtooth", 0.35, 0.15);
+  setTimeout(()=> playSound(380, "sawtooth", 0.35, 0.15), 180);
+}
+function sfxBassDrop() {
+  try {
+    const osc = ctx.createOscillator(), gain = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(160, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(30, ctx.currentTime + 1.2);
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 1.2);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 1.2);
+  } catch(e){}
+}
+function sfxPneumaticUnlock() {
+  playSound(80, "sine", 0.4, 0.25);
+  setTimeout(()=> playSound(600, "triangle", 0.2, 0.1), 100);
+  setTimeout(()=> playSound(880, "sine", 0.5, 0.2), 250);
 }
 
-function renderVaultGrid() {
-  const grid = document.getElementById('vaultGrid');
-  grid.innerHTML = '';
-  grid.style.gridTemplateColumns = `repeat(${Math.sqrt(vaultSize)}, 1fr)`;
+/* =========================================================================
+   POLICE CLOCK COUNTDOWN CONTROLLER
+   ========================================================================= */
+let policeSeconds = 180;
+let clockInterval = null;
 
-  for (let i = 0; i < vaultSize; i++) {
-    const box = document.createElement('div');
-    box.className = 'vault-tumbler';
-    box.id = `tumbler-${i}`;
-    box.innerHTML = `<span style="font-size:0.75rem; color:var(--text-muted);">#${i.toString(2).padStart(Math.log2(vaultSize), '0')}</span><span>🔒</span>`;
-    grid.appendChild(box);
-  }
-  updateVaultVisuals();
-}
-
-function updateVaultVisuals() {
-  const confDisp = document.getElementById('dispConfidence');
-  let conf = 0;
-
-  for (let i = 0; i < vaultSize; i++) {
-    const box = document.getElementById(`tumbler-${i}`);
-    if (!box) continue;
-
-    box.className = 'vault-tumbler';
-    if (hasSuperposition) {
-      box.classList.add('superposed');
-      box.innerHTML = `<span style="font-size:0.75rem; color:var(--cyan);">#${i.toString(2).padStart(Math.log2(vaultSize), '0')}</span><span>✨</span>`;
-    } else {
-      box.innerHTML = `<span style="font-size:0.75rem; color:var(--text-muted);">#${i.toString(2).padStart(Math.log2(vaultSize), '0')}</span><span>🔒</span>`;
+function startPoliceClock() {
+  if (clockInterval) clearInterval(clockInterval);
+  clockInterval = setInterval(() => {
+    if (policeSeconds > 0) {
+      policeSeconds--;
+      renderClock();
+      if (policeSeconds === 120) {
+        document.getElementById('scannerText').textContent = 'POLICE SCANNER: "Air Support Unit 2 reports movement inside vault chamber..."';
+      } else if (policeSeconds === 60) {
+        document.getElementById('scannerText').textContent = 'POLICE SCANNER: "Armed response breaching exterior vault perimeter! ETA 60 SECONDS!"';
+        document.getElementById('alarmStrobe').classList.add('active');
+        sfxAlarm();
+      }
     }
-  }
-
-  if (!hasSuperposition) {
-    conf = 0;
-  } else if (currentMission === 1) {
-    conf = Math.round((1 / vaultSize) * 100);
-  } else if (currentMission === 2) {
-    if (hasOracle && !hasAmplifier) conf = 25;
-    if (hasOracle && hasAmplifier) conf = 100;
-  } else if (currentMission === 3) {
-    // Exact Grover equation: sin^2((2k + 1) * theta)
-    const theta = Math.asin(1 / Math.sqrt(vaultSize));
-    const rawConf = Math.pow(Math.sin((2 * loopIterations + 1) * theta), 2);
-    conf = Math.round(rawConf * 100);
-  }
-
-  confDisp.textContent = conf + "%";
+  }, 1000);
 }
 
-/* =========================================================
-   CODE RENDERING & INJECTION
-   ========================================================= */
-function renderCodeIDE(highlightKey = null) {
-  const ide = document.getElementById('codeIDE');
-  ide.innerHTML = '';
-  let lines = [];
-
-  lines.push({ text: `qc = QuantumCircuit(${Math.log2(vaultSize)})`, cls: "var" });
-
-  if (hasSuperposition) {
-    lines = lines.concat(CODE_STEPS.superposition);
-  }
-
-  if (currentMission === 2) {
-    if (hasOracle) lines = lines.concat(CODE_STEPS.oracle);
-    if (hasAmplifier) lines = lines.concat(CODE_STEPS.amplifier);
-  }
-
-  if (currentMission === 3) {
-    lines.push({ text: `# Counted Loop: Amplify exactly ${loopIterations} times`, cls: "cmt" });
-    lines.push({ text: `for step in range(${loopIterations}):`, cls: "kw" });
-    lines.push({ text: `    qc.append(oracle, range(${Math.log2(vaultSize)}))`, cls: "fn" });
-    lines.push({ text: `    qc.append(diffuser, range(${Math.log2(vaultSize)}))`, cls: "fn" });
-  }
-
-  lines = lines.concat(CODE_STEPS.measure);
-
-  lines.forEach((line, idx) => {
-    const row = document.createElement('div');
-    row.className = 'code-line' + (line.highlight || line.key === highlightKey ? ' highlight' : '');
-    row.innerHTML = `<span class="line-num">${idx + 1}</span><span class="line-content ${line.cls}">${escapeHtml(line.text)}</span>`;
-    ide.appendChild(row);
-  });
+function renderClock() {
+  const m = Math.floor(policeSeconds / 60);
+  const s = policeSeconds % 60;
+  document.getElementById('policeClock').textContent = 
+    String(m).padStart(2, '0') + ":" + String(s).padStart(2, '0');
 }
 
-function escapeHtml(str) {
-  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+/* =========================================================================
+   STAGE ROUTER & HEIST NARRATIVE PHASES
+   ========================================================================= */
+let currentStage = 1;
+let vaultBoxes = 4;
+let targetCombo = 2;
+let classicalClicks = 0;
+let groverLoops = 1;
+let scopeAnim = null;
+let scopePhase = 0;
+
+function setStage(stageNum) {
+  currentStage = stageNum;
+  sfxClick();
+  if (scopeAnim) cancelAnimationFrame(scopeAnim);
+
+  const stageBox = document.getElementById('vaultStage');
+  const agent = document.getElementById('agentName');
+  const comms = document.getElementById('commsMsg');
+  const objective = document.getElementById('objectiveText');
+
+  if (stageNum === 1) {
+    // -------------------------------------------------------------
+    // STAGE 1: THE AGONY OF MANUAL BRUTE-FORCE
+    // -------------------------------------------------------------
+    agent.textContent = "VALE // MASTER SAFECRACKER";
+    comms.innerHTML = "We are inside Door One. Four safe deposit drawers. The master keycard is inside <b>just one drawer</b>. Classical computers check combinations <b>one by one</b>. Feel how agonizingly slow this is—start clicking drawers!";
+    objective.textContent = "CLICK DEPOSIT BOXES MANUALLY BEFORE POLICE CONVERGE";
+    vaultBoxes = 4;
+    targetCombo = 2;
+    classicalClicks = 0;
+
+    stageBox.innerHTML = `
+      <div style="display:flex; justify-content:space-between; width:100%; font-family:var(--f-mono); font-size:0.86rem;">
+        <span>VAULT SECURITY: 4 DEPOSIT DRAWERS</span>
+        <span style="color:var(--laser-red);" id="manualCount">TRIES SPENT: 0 / 4</span>
+      </div>
+      <div class="safe-matrix" style="grid-template-columns: repeat(2, 1fr);">
+        <div class="deposit-box" id="box-0" onclick="clickClassicalBox(0)"><span>#00</span><span>🔒</span></div>
+        <div class="deposit-box" id="box-1" onclick="clickClassicalBox(1)"><span>#01</span><span>🔒</span></div>
+        <div class="deposit-box" id="box-2" onclick="clickClassicalBox(2)"><span>#10</span><span>🔒</span></div>
+        <div class="deposit-box" id="box-3" onclick="clickClassicalBox(3)"><span>#11</span><span>🔒</span></div>
+      </div>
+      <p id="classicalStatus" style="color:var(--text-dim); font-size:0.95rem; font-family:var(--f-mono);">Click an initial box to crack manually.</p>
+    `;
+
+    renderIDE([
+      { t: "# MANUAL CLASSICAL SEARCH ALGORITHM", c: "c-cmt" },
+      { t: "def brute_force_vault(drawers, target):", c: "c-kw" },
+      { t: "    for box in drawers:  # One... single... box... at a time", c: "c-kw" },
+      { t: "        if box.open() == target:", c: "c-kw" },
+      { t: "            return 'KEY_FOUND'", c: "c-num" },
+      { t: "    # At 64 boxes, the police catch you.", c: "c-cmt" }
+    ]);
+  }
+  else if (stageNum === 2) {
+    // -------------------------------------------------------------
+    // STAGE 2: THE 3D COIN — SUPERPOSITION & MEASUREMENT
+    // -------------------------------------------------------------
+    agent.textContent = "OKONJO // HARDWARE ENGINEER";
+    comms.innerHTML = "An ordinary computer switch is flat on the counter: <b>Heads (0)</b> or <b>Tails (1)</b>. Now watch what happens when I flick it. <b>While spinning, which is it?</b> It is an equal blend of BOTH! That is <b>Superposition</b>.";
+    objective.textContent = "HIT 'SLAP HAND DOWN' TO COLLAPSE THE QUANTUM STATE";
+
+    stageBox.innerHTML = `
+      <div class="coin-tumbler-wrap">
+        <div class="coin-disc spinning" id="coinDisc">
+          <div class="coin-face coin-heads">HEADS // 0</div>
+          <div class="coin-face coin-tails">TAILS // 1</div>
+        </div>
+        <div style="display:flex; gap:12px; margin-top:10px;">
+          <button class="heist-btn" id="btnSlapCoin" onclick="slapCoinTumbler()">✋ SLAP HAND DOWN (MEASURE)</button>
+          <button class="heist-btn btn-gold" id="btnSpinAgain" onclick="reSpinCoin()" style="display:none;">🔄 SPIN COIN AGAIN</button>
+        </div>
+        <p id="coinNarrative" style="text-align:center; max-width:480px; font-size:1.05rem; line-height:1.6;"></p>
+        <button class="heist-btn btn-gold" id="btnSpinAllBoxes" onclick="applySuperpositionToAllBoxes()" style="display:none; width:100%;">
+          ✨ SPIN ALL 4 VAULT DRAWERS AT ONCE
+        </button>
+      </div>
+    `;
+
+    renderIDE([
+      { t: "from qiskit import QuantumCircuit", c: "c-kw" },
+      { t: "# VARIABLE: Prepare 2 Quantum Bits (Qubits)", c: "c-cmt" },
+      { t: "n_qubits = 2  # 2 qubits = 4 simultaneously spun states", c: "c-num" },
+      { t: "qc = QuantumCircuit(n_qubits)", c: "c-fn" },
+      { t: "", c: "" },
+      { t: "# THE SPINNING COIN GATE: HADAMARD (qc.h)", c: "c-cmt" },
+      { t: "# Takes qubits off the table and spins them simultaneously", c: "c-cmt" },
+      { t: "qc.h(range(n_qubits))  # Superposition engaged!", c: "c-qop", active: true }
+    ]);
+  }
+  else if (stageNum === 3) {
+    // -------------------------------------------------------------
+    // STAGE 3: NOISE CANCELLING INTERFERENCE (THE OSCILLOSCOPE)
+    // -------------------------------------------------------------
+    agent.textContent = "VALE // MASTER SAFECRACKER";
+    comms.innerHTML = "Spinning coins only give an equal 25% blind guess. Here is how we guarantee 100%: <b>Noise-Cancelling Headphones</b>. Sound waves that are flipped upside-down destructively cancel each other out to dead silence, amplifying the target!";
+    objective.textContent = "CLICK '1. FLIP TARGET SOUNDWAVE', THEN '2. CANCEL WRONG WAVES'";
+
+    targetCombo = 1;
+    stageBox.innerHTML = `
+      <div class="oscilloscope-box">
+        <div class="oscilloscope-header">
+          <span>ACOUSTIC RESONANCE OSCILLOSCOPE</span>
+          <span id="scopeResonance" style="color:var(--cyan);">Target Resonance: 25% (Ambient)</span>
+        </div>
+        <canvas id="scopeCanvas"></canvas>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; width:100%;">
+        <button class="heist-btn" id="btnFlipPhase" onclick="triggerPhaseFlip()">1. 🎯 FLIP TARGET SOUNDWAVE</button>
+        <button class="heist-btn btn-gold" id="btnCancelNoise" onclick="triggerNoiseCancellation()" disabled>2. 📉 CANCEL WRONG WAVES</button>
+      </div>
+      <button class="heist-btn btn-gold" id="btnCrackDoorTwo" onclick="crackDoorTwoSuccess()" style="display:none; width:100%;">
+        🔓 POP DOOR TWO IN A SINGLE QUANTUM SHOT
+      </button>
+    `;
+
+    startOscilloscope();
+    renderIDE([
+      { t: "# QUANTUM INTERFERENCE: THE NOISE CANCELLER", c: "c-cmt" },
+      { t: "# Step 1: Target Soundwave Phase Inversion", c: "c-cmt" },
+      { t: "qc.cz(0, 1)  # Inverts soundwave of target #01", c: "c-qop" },
+      { t: "", c: "" },
+      { t: "# Step 2: Destructive Cancellation of Wrong Sounds", c: "c-cmt" },
+      { t: "qc.h(range(2))", c: "c-qop" },
+      { t: "qc.x(range(2))", c: "c-qop" },
+      { t: "qc.cz(0, 1)", c: "c-qop" },
+      { t: "qc.x(range(2))", c: "c-qop" },
+      { t: "qc.h(range(2))  # Target reaches 100% constructive power!", c: "c-qop", active: true }
+    ]);
+  }
+  else if (stageNum === 4) {
+    // -------------------------------------------------------------
+    // STAGE 4: THE BIG VAULT (COUNTED FOR-LOOPS)
+    // -------------------------------------------------------------
+    agent.textContent = "OKONJO // HARDWARE ENGINEER";
+    comms.innerHTML = "<b>THE FINAL DOOR: 16 COMBINATIONS (4 QUBITS).</b> Police are 60 seconds out! With 16 drawers, one single noise-cancellation pass isn't enough. In programming, we repeat operations with a <b>Counted Loop</b>. Spin the dial to lock 100% resonance!";
+    objective.textContent = "SPIN THE ROTARY DIAL TO FIND THE EXACT OPTIMAL LOOP COUNT";
+
+    vaultBoxes = 16;
+    targetCombo = 11;
+    groverLoops = 1;
+
+    stageBox.innerHTML = `
+      <div class="rotary-panel">
+        <div class="dial-meta">
+          <h4>FOR-LOOP CONTROL: AMPLITUDE ITERATIONS</h4>
+          <p>for iteration in range(loop_count):</p>
+        </div>
+        <div class="rotary-wheel">
+          <button class="rotary-btn" onclick="dialLoop(-1)">−</button>
+          <div class="rotary-number" id="dialDisplay">1</div>
+          <button class="rotary-btn" onclick="dialLoop(1)">+</button>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; width:100%; font-family:var(--f-mono); font-size:0.84rem;">
+        <span>VAULT THREE: 16 DRAWERS</span>
+        <span id="loopConfDisplay" style="color:var(--laser-red);">CONFIDENCE: 47%</span>
+      </div>
+
+      <div class="safe-matrix" id="matrix16" style="grid-template-columns: repeat(4, 1fr); max-width:380px;"></div>
+
+      <button class="heist-btn btn-gold" id="btnExecuteGroverFinal" onclick="executeFinalSafeCrack()" style="width:100%;">
+        ⚡ EXECUTE GROVER'S LOOP & EXTRACT JEWEL
+      </button>
+    `;
+
+    renderMatrix16();
+    updateLoopTerminalCode();
+  }
 }
 
-/* =========================================================
-   USER ACTIONS
-   ========================================================= */
-function injectSuperposition() {
-  soundSuperposition();
-  hasSuperposition = true;
-  updateVaultVisuals();
-  renderCodeIDE();
-  drawScopeCanvas();
+/* =========================================================================
+   STAGE 1 LOGIC: MANUAL CLASSICAL SEARCH
+   ========================================================================= */
+function clickClassicalBox(idx) {
+  const box = document.getElementById(`box-${idx}`);
+  if (!box || box.classList.contains('empty') || box.classList.contains('cracked')) return;
 
-  document.getElementById('commText').innerHTML = "<b>SUPERPOSITION ENGAGED!</b> Look at the code terminal: <span class='q-op'>qc.h()</span> has put all 4 tumbler states in simultaneous vibration. Ready to crack the lock?";
-  
-  const cmd = document.getElementById('cmdStrip');
-  cmd.innerHTML = `
-    <button class="cmd-btn action-primary" onclick="runQuantumExecution()">
-      <span class="cmd-tag">MEASURE REGISTER // qc.measure()</span>
-      Test Lock Superposition
+  classicalClicks++;
+  policeSeconds = Math.max(10, policeSeconds - 15); // Wastes police time!
+  renderClock();
+  document.getElementById('manualCount').textContent = `TRIES SPENT: ${classicalClicks} / 4`;
+
+  if (idx === targetCombo) {
+    sfxPneumaticUnlock();
+    box.classList.add('cracked');
+    box.innerHTML = `<span>KEY</span><span>💎</span>`;
+    document.getElementById('classicalStatus').innerHTML = `<b style="color:var(--emerald);">KEYCARD EXTRACTED!</b> Took ${classicalClicks} manual tries. At 16 or 64 boxes, the police would have caught us.`;
+    document.getElementById('objectiveText').textContent = "DOOR 1 CRACKED. CLICK 'STAGE 2' ABOVE TO SEE QUANTUM SUPERPOSITION.";
+    setTimeout(() => setStage(2), 2200);
+  } else {
+    sfxAlarm();
+    box.classList.add('empty');
+    box.innerHTML = `<span>EMPTY</span><span>❌</span>`;
+    document.getElementById('classicalStatus').innerHTML = `<span style="color:var(--laser-red);">DRAWER #${idx} EMPTY! Alarm tripped! Police closing in!</span>`;
+  }
+}
+
+/* =========================================================================
+   STAGE 2 LOGIC: THE 3D SPINNING COIN
+   ========================================================================= */
+function slapCoinTumbler() {
+  const coin = document.getElementById('coinDisc');
+  if (!coin || !coin.classList.contains('spinning')) return;
+  coin.classList.remove('spinning');
+
+  const isHeads = Math.random() < 0.5;
+  coin.style.transform = isHeads ? 'rotateY(0deg)' : 'rotateY(180deg)';
+  sfxHeavyTumbler();
+
+  document.getElementById('btnSlapCoin').style.display = 'none';
+  document.getElementById('btnSpinAgain').style.display = 'block';
+  document.getElementById('btnSpinAllBoxes').style.display = 'block';
+
+  document.getElementById('coinNarrative').innerHTML = `
+    <b>COLLAPSED TO ${isHeads ? 'HEADS (0)' : 'TAILS (1)'}!</b> While spinning, it wasn't a secret value—it was <b>BOTH</b>. The instant your hand hit it, you performed a <b>Measurement</b>, forcing the wave to choose a reality.
+  `;
+  document.getElementById('objectiveText').textContent = "NOW CLICK 'SPIN ALL 4 VAULT DRAWERS AT ONCE' BELOW";
+}
+
+function reSpinCoin() {
+  sfxClick();
+  const coin = document.getElementById('coinDisc');
+  coin.classList.add('spinning');
+  document.getElementById('btnSlapCoin').style.display = 'block';
+  document.getElementById('btnSpinAgain').style.display = 'none';
+  document.getElementById('btnSpinAllBoxes').style.display = 'none';
+  document.getElementById('coinNarrative').textContent = "";
+  document.getElementById('objectiveText').textContent = "SLAP HAND DOWN TO MEASURE AGAIN";
+}
+
+function applySuperpositionToAllBoxes() {
+  sfxPneumaticUnlock();
+  const stageBox = document.getElementById('vaultStage');
+  stageBox.innerHTML = `
+    <h3 style="font-family:var(--f-title); color:var(--cyan); letter-spacing:0.05em;">SUPERPOSITION APPLIED: ALL 4 COMBINATIONS VIBRATING</h3>
+    <div class="safe-matrix" style="grid-template-columns: repeat(2, 1fr);">
+      <div class="deposit-box spinning-quantum"><span>00</span><span>✨</span></div>
+      <div class="deposit-box spinning-quantum"><span>01</span><span>✨</span></div>
+      <div class="deposit-box spinning-quantum"><span>10</span><span>✨</span></div>
+      <div class="deposit-box spinning-quantum"><span>11</span><span>✨</span></div>
+    </div>
+    <div style="background:rgba(0, 240, 255, 0.1); border:1px solid var(--cyan); border-radius:8px; padding:14px; text-align:center;">
+      With a single instruction (<span class="c-qop">qc.h</span>), all 4 combination drawers are tested <b>at the exact same instant</b>.
+    </div>
+    <button class="heist-btn btn-gold" onclick="setStage(3)" style="width:100%;">
+      PROCEED TO STAGE 3: NOISE CANCELLATION →
     </button>
   `;
+  document.getElementById('objectiveText').textContent = "SUPERPOSITION ESTABLISHED. PROCEED TO STAGE 3 TO AIM THE ODDS.";
 }
 
-function injectOracle() {
-  soundClick();
-  hasOracle = true;
-  document.getElementById('btnOracle').disabled = true;
-  document.getElementById('btnAmplifier').disabled = false;
-  renderCodeIDE();
-  drawScopeCanvas();
-  document.getElementById('commText').innerHTML = "Target marked! We flipped its wave phase upside down. Just like noise-cancelling tech, upside down allows us to cancel it or boost it. <b>Now click Amplify!</b>";
-}
+/* =========================================================================
+   STAGE 3 LOGIC: NOISE CANCELLATION (CANVAS OSCILLOSCOPE)
+   ========================================================================= */
+let isPhaseFlipped = false;
+let isNoiseCancelled = false;
 
-function injectAmplifier() {
-  soundSuccess();
-  hasAmplifier = true;
-  document.getElementById('btnAmplifier').disabled = true;
-  updateVaultVisuals();
-  renderCodeIDE();
-  drawScopeCanvas();
-  document.getElementById('commText').innerHTML = "<b>INTERFERENCE COMPLETE!</b> The incorrect answers destructively cancelled out to 0%, while target #01 constructively amplified to <b>100%</b>! Hit COMPILE & RUN.";
-}
-
-function adjustLoop(delta) {
-  soundClick();
-  loopIterations = Math.max(1, Math.min(8, loopIterations + delta));
-  document.getElementById('loopValue').textContent = loopIterations;
-  updateVaultVisuals();
-  renderCodeIDE();
-  drawScopeCanvas();
-}
-
-function runQuantumExecution() {
-  soundClick();
-  const compilerText = document.getElementById('compilerText');
-  const indicator = document.getElementById('compilerIndicator');
-  
-  compilerText.textContent = "Compiling QASM Circuit...";
-  indicator.style.background = "var(--amber)";
-
-  setTimeout(() => {
-    compilerText.textContent = "Kernel: Measurement Complete [0 errors]";
-    indicator.style.background = "var(--emerald)";
-    soundSuccess();
-
-    // Crack the target tumbler visually
-    const box = document.getElementById(`tumbler-${targetSecret}`);
-    if (box) {
-      box.classList.remove('superposed');
-      box.classList.add('cracked');
-      box.innerHTML = `<span style="font-size:0.75rem; color:var(--emerald);">KEY FOUND</span><span>💎</span>`;
-    }
-
-    if (currentMission === 1) {
-      document.getElementById('stepNode1').classList.add('completed');
-      setTimeout(() => switchMission(2), 1600);
-    } else if (currentMission === 2) {
-      document.getElementById('stepNode2').classList.add('completed');
-      setTimeout(() => switchMission(3), 1600);
-    } else if (currentMission === 3) {
-      document.getElementById('stepNode3').classList.add('completed');
-      setTimeout(() => openCert(), 1200);
-    }
-  }, 450);
-}
-
-/* =========================================================
-   CANVAS SCOPE (Wave Interference Animation)
-   ========================================================= */
-function drawScopeCanvas() {
+function startOscilloscope() {
+  isPhaseFlipped = false;
+  isNoiseCancelled = false;
   const cvs = document.getElementById('scopeCanvas');
-  const ctx = cvs.getContext('2d');
-  cvs.width = cvs.clientWidth * window.devicePixelRatio;
-  cvs.height = cvs.clientHeight * window.devicePixelRatio;
-  ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+  if (!cvs) return;
+  const c = cvs.getContext('2d');
 
-  const w = cvs.clientWidth;
-  const h = cvs.clientHeight;
-  const midY = h / 2;
+  function renderScope() {
+    cvs.width = cvs.clientWidth * window.devicePixelRatio;
+    cvs.height = cvs.clientHeight * window.devicePixelRatio;
+    c.scale(window.devicePixelRatio, window.devicePixelRatio);
+    const w = cvs.clientWidth, h = cvs.clientHeight, mid = h / 2;
 
-  ctx.fillStyle = '#050711';
-  ctx.fillRect(0, 0, w, h);
+    c.fillStyle = '#020409';
+    c.fillRect(0, 0, w, h);
 
-  // Center reference baseline
-  ctx.strokeStyle = '#212b4d';
-  ctx.lineWidth = 1;
-  ctx.setLineDash([4, 4]);
-  ctx.beginPath();
-  ctx.moveTo(0, midY);
-  ctx.lineTo(w, midY);
-  ctx.stroke();
-  ctx.setLineDash([]);
+    // Centerline baseline
+    c.strokeStyle = '#1e263d';
+    c.setLineDash([4, 4]);
+    c.beginPath(); c.moveTo(0, mid); c.lineTo(w, mid); c.stroke();
+    c.setLineDash([]);
 
-  const barWidth = w / vaultSize;
+    scopePhase += 0.06;
 
-  for (let i = 0; i < vaultSize; i++) {
-    const isTarget = (i === targetSecret);
-    let amp = 0.2; // initial baseline
+    // 4 Sine waves for 4 deposit boxes
+    for (let i = 0; i < 4; i++) {
+      const isTarget = (i === targetCombo);
+      c.beginPath();
+      c.lineWidth = isTarget ? 3.5 : 1.5;
 
-    if (!hasSuperposition) {
-      amp = 0.05;
-    } else if (currentMission === 1) {
-      amp = 0.35;
-    } else if (currentMission === 2) {
-      if (hasOracle && !hasAmplifier) {
-        amp = isTarget ? -0.35 : 0.35;
-      } else if (hasOracle && hasAmplifier) {
-        amp = isTarget ? 0.9 : 0.02;
+      let amp = 18;
+      if (!isPhaseFlipped && !isNoiseCancelled) {
+        amp = 18;
+        c.strokeStyle = isTarget ? '#ffb800' : '#00f0ff';
+      } else if (isPhaseFlipped && !isNoiseCancelled) {
+        amp = isTarget ? -24 : 18; // Inverted phase!
+        c.strokeStyle = isTarget ? '#ff1a40' : '#00f0ff';
+      } else if (isPhaseFlipped && isNoiseCancelled) {
+        amp = isTarget ? 50 : 2; // Constructive target, destructive others!
+        c.strokeStyle = isTarget ? '#00ffa3' : 'rgba(255,255,255,0.1)';
       }
-    } else if (currentMission === 3) {
-      const theta = Math.asin(1 / Math.sqrt(vaultSize));
-      const targetAmp = Math.sin((2 * loopIterations + 1) * theta);
-      const otherAmp = Math.cos((2 * loopIterations + 1) * theta) / Math.sqrt(vaultSize - 1);
-      amp = isTarget ? targetAmp : otherAmp;
+
+      for (let x = 0; x < w; x += 4) {
+        const y = mid + Math.sin(x * 0.035 + scopePhase + i) * amp;
+        if (x === 0) c.moveTo(x, y); else c.lineTo(x, y);
+      }
+      c.stroke();
     }
+    scopeAnim = requestAnimationFrame(renderScope);
+  }
+  renderScope();
+}
 
-    const x = i * barWidth + barWidth * 0.15;
-    const barW = barWidth * 0.7;
-    const barH = amp * (midY * 0.85);
+function triggerPhaseFlip() {
+  sfxHeavyTumbler();
+  isPhaseFlipped = true;
+  document.getElementById('btnFlipPhase').disabled = true;
+  document.getElementById('btnCancelNoise').disabled = false;
+  document.getElementById('scopeResonance').innerHTML = "<b style='color:var(--laser-red);'>Target Wave Inverted Upside-Down</b>";
+  document.getElementById('objectiveText').textContent = "TARGET WAVE INVERTED. NOW CLICK '2. CANCEL WRONG WAVES' TO BOOST IT.";
+}
 
-    ctx.fillStyle = isTarget ? '#ffb400' : '#00f0ff';
-    if (hasAmplifier && currentMission === 2 && isTarget) ctx.fillStyle = '#00ffa3';
+function triggerNoiseCancellation() {
+  sfxBassDrop();
+  isNoiseCancelled = true;
+  document.getElementById('btnCancelNoise').disabled = true;
+  document.getElementById('btnCrackDoorTwo').style.display = 'block';
+  document.getElementById('scopeResonance').innerHTML = "<b style='color:var(--emerald);'>Target Resonance: 100% Guaranteed</b>";
+  document.getElementById('objectiveText').textContent = "NOISE CANCELLED! CLICK 'POP DOOR TWO' TO CRACK IT.";
+}
 
-    ctx.beginPath();
-    ctx.roundRect(x, midY - barH, barW, barH, 4);
-    ctx.fill();
+function crackDoorTwoSuccess() {
+  sfxPneumaticUnlock();
+  setStage(4);
+}
 
-    // Pulse highlight for target
-    if (isTarget && hasSuperposition) {
-      ctx.strokeStyle = '#fff';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-    }
+/* =========================================================================
+   STAGE 4 LOGIC: THE GROVER FOR-LOOP (DIAL & 16 DRAWERS)
+   ========================================================================= */
+function renderMatrix16() {
+  const g = document.getElementById('matrix16');
+  if (!g) return;
+  g.innerHTML = '';
+  for (let i = 0; i < 16; i++) {
+    const b = document.createElement('div');
+    b.className = 'deposit-box spinning-quantum';
+    b.id = `safe16-${i}`;
+    b.style.fontSize = '0.75rem';
+    b.innerHTML = `<span>${i.toString(2).padStart(4,'0')}</span><span>✨</span>`;
+    g.appendChild(b);
   }
 }
 
-/* =========================================================
-   PLENARY CERTIFICATE & REPORTING
-   ========================================================= */
-function openCert() {
-  soundSuccess();
-  document.getElementById('certModal').style.display = 'flex';
+function dialLoop(delta) {
+  sfxClick();
+  groverLoops = Math.max(1, Math.min(6, groverLoops + delta));
+  document.getElementById('dialDisplay').textContent = groverLoops;
+
+  // Exact Grover formula: sin^2((2k + 1) * theta) where theta = asin(1/sqrt(N))
+  const theta = Math.asin(1 / Math.sqrt(16));
+  const prob = Math.pow(Math.sin((2 * groverLoops + 1) * theta), 2);
+  const conf = Math.round(prob * 100);
+
+  const disp = document.getElementById('loopConfDisplay');
+  disp.textContent = `CONFIDENCE: ${conf}%`;
+  disp.style.color = (conf >= 90) ? 'var(--emerald)' : (conf >= 50 ? 'var(--gold)' : 'var(--laser-red)');
+
+  updateLoopTerminalCode();
+
+  if (groverLoops === 3) {
+    sfxBassDrop();
+    document.getElementById('objectiveText').textContent = "🎯 SWEET SPOT! 3 LOOPS REACHES 96% CONFIDENCE. HIT 'EXECUTE GROVER'S LOOP'!";
+  } else if (groverLoops > 3) {
+    document.getElementById('objectiveText').textContent = "⚠️ OVERSHOT! Adding more loops pushes the soundwave past peak, cancelling itself!";
+  } else {
+    document.getElementById('objectiveText').textContent = "DIAL TO 3 LOOPS FOR OPTIMAL CONSTRUCTIVE INTERFERENCE.";
+  }
 }
 
-function closeCert() {
-  document.getElementById('certModal').style.display = 'none';
+function updateLoopTerminalCode() {
+  renderIDE([
+    { t: "# VARIABLE: Register of 4 Qubits (16 safe drawers)", c: "c-cmt" },
+    { t: "n_qubits = 4", c: "c-num" },
+    { t: "qc = QuantumCircuit(n_qubits)", c: "c-fn" },
+    { t: "qc.h(range(n_qubits))  # Superposition over all 16 drawers", c: "c-qop" },
+    { t: "", c: "" },
+    { t: "# PROGRAMMING CONSTRUCT: COUNTED FOR-LOOP", c: "c-cmt" },
+    { t: `# Iterating ${groverLoops} amplification pass(es)`, c: "c-cmt" },
+    { t: `for step in range(${groverLoops}):`, c: "c-kw", active: true },
+    { t: "    qc.append(oracle, range(n_qubits))    # Mark target soundwave", c: "c-fn" },
+    { t: "    qc.append(diffuser, range(n_qubits))  # Cancel wrong soundwaves", c: "c-fn" },
+    { t: "", c: "" },
+    { t: "qc.measure_all()  # Extracts the jewel combination in 1 shot!", c: "c-qop" }
+  ]);
 }
 
-function copyCertReport() {
-  const report = 
-`OPERATIVE MISSION REPORT // QUANTUM INFILTRATION
-===============================================
-Operative: Verified Adult Cadet (Age 40+)
-Task: Quantum Circuit Programming in 30 Mins
-Algorithm: Grover's Amplitude Amplification
+function executeFinalSafeCrack() {
+  sfxBassDrop();
+  setTimeout(()=> sfxPneumaticUnlock(), 400);
 
-ACHIEVEMENTS:
-- Prepared Superposition Register: 6 Qubits (64 states)
-- Noise-Cancellation Phase Shift: Synthesized in Qiskit
-- Counted Iteration Loops: Optimized O(√N) speedup
-- Classical Brute-Force: ~500,000 steps
-- Quantum Execution: ~1,000 steps
+  const keyBox = document.getElementById(`safe16-${targetCombo}`);
+  if (keyBox) {
+    keyBox.className = "deposit-box cracked";
+    keyBox.innerHTML = `<span>JEWEL</span><span>💎</span>`;
+  }
+  setTimeout(() => openDossier(), 1000);
+}
 
-Status: CERTIFIED QUANTUM PROGRAMMER.
-Validated on IBM Falcon Simulated Backend.`;
-
-  navigator.clipboard.writeText(report).then(() => {
-    alert("Mission report copied to clipboard! Share it with pride.");
+/* =========================================================================
+   LIVE AUTO-TYPING TERMINAL (PYTHON QISKIT)
+   ========================================================================= */
+function renderIDE(lines) {
+  const term = document.getElementById('terminalCode');
+  term.innerHTML = '';
+  lines.forEach((l, i) => {
+    const row = document.createElement('div');
+    row.className = 'code-line' + (l.active ? ' active' : '');
+    row.innerHTML = `<span class="line-no">${i+1}</span><span class="line-txt ${l.c||''}">${escapeHTML(l.t)}</span>`;
+    term.appendChild(row);
   });
 }
 
-// Window init
-window.addEventListener('resize', drawScopeCanvas);
-switchMission(1);
+function escapeHTML(s) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+/* =========================================================================
+   CLEARANCE DOSSIER MODAL CONTROLLER
+   ========================================================================= */
+function openDossier() {
+  clearInterval(clockInterval);
+  document.getElementById('alarmStrobe').classList.remove('active');
+  document.getElementById('dossierModal').style.display = 'flex';
+}
+
+function closeDossier() {
+  document.getElementById('dossierModal').style.display = 'none';
+}
+
+function copyOperativeDossier() {
+  const text = 
+`=============================================================
+CLASSIFIED OPERATIVE DOSSIER // OPERATION KOH-I-NOOR
+=============================================================
+Subject: Adult Quantum Programming Certification (Age 40+)
+Clearance: Quantum Infiltration Specialist
+Execution Time: Sub-3 Minute Extraction
+
+COMPLETED ALGORITHMIC DIRECTIVES:
+1. Superposition (qc.h): Tested all drawers simultaneously on edge.
+2. Acoustic Inversion: Flipped target phase using quantum gates.
+3. Wave Cancellation: Destructively cancelled non-target soundwaves.
+4. Counted Loops (for step in range): Balanced Grover resonance to 96%.
+
+GLOBAL SCALE SHOCK:
+- 1,000,000 Safe Combinations via Classical Computer: ~500,000 Checks (3.5 Days)
+- 1,000,000 Safe Combinations via Your Quantum Code: 1,000 Operations (0.02 Seconds)
+
+STATUS: VERIFIED.
+You are among the estimated <0.005% of humans who have authored and compiled a functioning quantum search algorithm.`;
+
+  navigator.clipboard.writeText(text).then(() => {
+    alert("Classified dossier copied to clipboard! Share your credentials.");
+  });
+}
+
+// Initial Boot
+startPoliceClock();
+setStage(1);
 </script>
 </body>
 </html>
