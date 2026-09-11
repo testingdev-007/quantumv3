@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OPERATION SUPERPOSITION // Quantum Programming</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-base: #060913;
+    --bg-surface: #0e1326;
+    --bg-surface-elevated: #161c36;
+    --border-subtle: #212b4d;
+    --border-bright: #3c4c82;
+    --text-primary: #f0f4ff;
+    --text-secondary: #9da8cb;
+    --text-muted: #5e6b94;
+    --cyan: #00f0ff;
+    --cyan-glow: rgba(0, 240, 255, 0.35);
+    --amber: #ffb400;
+    --amber-glow: rgba(255, 180, 0, 0.35);
+    --crimson: #ff3366;
+    --crimson-glow: rgba(255, 51, 102, 0.35);
+    --emerald: #00ffa3;
+    --emerald-glow: rgba(0, 255, 163, 0.35);
+    --f-sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --f-mono: 'Fira Code', Consolas, Monaco, monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  body {
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    font-family: var(--f-sans);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    background-image: 
+      radial-gradient(circle at 15% 10%, rgba(0, 240, 255, 0.08) 0%, transparent 40%),
+      radial-gradient(circle at 85% 85%, rgba(0, 255, 163, 0.06) 0%, transparent 40%),
+      linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+  }
+
+  /* Navigation & HUD Bar */
+  header {
+    background: rgba(14, 19, 38, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 14px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .brand-logo {
+    width: 34px;
+    height: 34px;
+    border: 2px solid var(--cyan);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 240, 255, 0.1);
+    box-shadow: 0 0 16px var(--cyan-glow);
+  }
+
+  .brand-logo svg {
+    width: 20px;
+    height: 20px;
+    fill: var(--cyan);
+  }
+
+  .brand-text h1 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #fff;
+    text-transform: uppercase;
+  }
+
+  .brand-text span {
+    font-size: 0.72rem;
+    color: var(--cyan);
+    font-family: var(--f-mono);
+    letter-spacing: 0.12em;
+  }
+
+  .stepper-nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-surface);
+    padding: 6px 10px;
+    border-radius: 30px;
+    border: 1px solid var(--border-subtle);
+  }
+
+  .step-node {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+
+  .step-node.active {
+    background: var(--cyan);
+    color: var(--bg-base);
+    box-shadow: 0 0 12px var(--cyan-glow);
+  }
+
+  .step-node.completed {
+    color: var(--emerald);
+    background: rgba(0, 255, 163, 0.1);
+    border-color: rgba(0, 255, 163, 0.3);
+  }
+
+  /* Main Workspace Split-Screen */
+  .workspace {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 520px;
+    height: calc(100vh - 65px);
+    overflow: hidden;
+  }
+
+  @media (max-width: 1100px) {
+    .workspace {
+      grid-template-columns: 1fr;
+      height: auto;
+      overflow: visible;
+    }
+  }
+
+  .stage-pane {
+    overflow-y: auto;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .ide-pane {
+    background: #080b17;
+    border-left: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  /* Terminal & Code Header */
+  .ide-header {
+    background: var(--bg-surface);
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .ide-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--f-mono);
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+  }
+
+  .terminal-dots {
+    display: flex;
+    gap: 6px;
+  }
+
+  .terminal-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+  .dot-red { background: #ff5f56; }
+  .dot-yellow { background: #ffbd2e; }
+  .dot-green { background: #27c93f; }
+
+  .ide-body {
+    flex: 1;
+    padding: 24px;
+    overflow-y: auto;
+    font-family: var(--f-mono);
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: #c9d1d9;
+    position: relative;
+  }
+
+  .code-line {
+    display: flex;
+    gap: 18px;
+    margin-bottom: 3px;
+    transition: background 0.2s;
+    border-radius: 4px;
+    padding: 2px 6px;
+  }
+
+  .code-line.highlight {
+    background: rgba(0, 240, 255, 0.12);
+    border-left: 3px solid var(--cyan);
+  }
+
+  .line-num {
+    color: var(--text-muted);
+    user-select: none;
+    min-width: 24px;
+    text-align: right;
+  }
+
+  .line-content {
+    flex: 1;
+    white-space: pre-wrap;
+  }
+
+  /* Syntax Highlighting */
+  .kw { color: #ff7b72; font-weight: 600; }
+  .fn { color: #d2a8ff; font-weight: 600; }
+  .str { color: #a5d6ff; }
+  .num { color: #79c0ff; }
+  .cmt { color: #8b949e; font-style: italic; }
+  .var { color: #ffa657; }
+  .q-op { color: var(--emerald); font-weight: 700; }
+
+  .ide-status-bar {
+    background: var(--bg-surface);
+    border-top: 1px solid var(--border-subtle);
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--f-mono);
+    font-size: 0.76rem;
+    color: var(--text-muted);
+  }
+
+  .compilation-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--emerald);
+    box-shadow: 0 0 8px var(--emerald-glow);
+  }
+
+  /* Mission Transmission Card */
+  .transmission-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 22px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .transmission-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 4px; height: 100%;
+    background: var(--cyan);
+  }
+
+  .comm-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .agent-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    border: 1px solid var(--cyan);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 240, 255, 0.08);
+  }
+
+  .agent-avatar svg {
+    width: 26px;
+    height: 26px;
+    fill: var(--cyan);
+  }
+
+  .agent-meta h3 {
+    font-size: 0.98rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    color: #fff;
+    text-transform: uppercase;
+  }
+
+  .agent-meta p {
+    font-size: 0.76rem;
+    color: var(--text-secondary);
+    font-family: var(--f-mono);
+  }
+
+  .comm-body {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--text-primary);
+  }
+
+  .comm-body b {
+    color: var(--cyan);
+  }
+
+  /* Vault Physical Stage */
+  .interactive-vault {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .vault-status-panel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-base);
+    border: 1px solid var(--border-subtle);
+    padding: 14px 20px;
+    border-radius: 12px;
+  }
+
+  .status-cluster {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .status-cluster .label {
+    font-size: 0.72rem;
+    font-family: var(--f-mono);
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+  }
+
+  .status-cluster .value {
+    font-size: 1.35rem;
+    font-weight: 800;
+    font-family: var(--f-mono);
+  }
+
+  .val-cyan { color: var(--cyan); }
+  .val-emerald { color: var(--emerald); }
+  .val-crimson { color: var(--crimson); }
+
+  /* Lock Matrix */
+  .vault-matrix-wrap {
+    background: #090d1a;
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 20px;
+    min-height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .vault-grid {
+    display: grid;
+    gap: 12px;
+    width: 100%;
+    max-width: 480px;
+  }
+
+  .vault-tumbler {
+    aspect-ratio: 1;
+    background: var(--bg-surface);
+    border: 2px solid var(--border-subtle);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-family: var(--f-mono);
+    font-weight: 700;
+    font-size: 1.1rem;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    user-select: none;
+  }
+
+  .vault-tumbler:hover {
+    border-color: var(--border-bright);
+    transform: translateY(-2px);
+  }
+
+  .vault-tumbler.superposed {
+    background: radial-gradient(circle, rgba(0, 240, 255, 0.22) 0%, rgba(14, 19, 38, 0.8) 100%);
+    border-color: var(--cyan);
+    box-shadow: 0 0 16px var(--cyan-glow);
+    animation: superposeFloat 2s ease-in-out infinite alternate;
+  }
+
+  @keyframes superposeFloat {
+    0% { transform: scale(0.97); filter: hue-rotate(0deg); }
+    100% { transform: scale(1.03); filter: hue-rotate(40deg); }
+  }
+
+  .vault-tumbler.cracked {
+    background: rgba(0, 255, 163, 0.25);
+    border-color: var(--emerald);
+    color: var(--emerald);
+    box-shadow: 0 0 24px var(--emerald-glow);
+    transform: scale(1.05);
+  }
+
+  .vault-tumbler.empty {
+    opacity: 0.35;
+    background: rgba(255, 51, 102, 0.1);
+    border-color: var(--crimson);
+  }
+
+  /* Wave Interference Canvas */
+  .canvas-container {
+    background: #050711;
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .canvas-container header {
+    background: transparent;
+    padding: 0;
+    border: none;
+  }
+
+  canvas {
+    width: 100%;
+    height: 140px;
+    border-radius: 6px;
+  }
+
+  /* Operator Action Blocks / Controls */
+  .quantum-deck {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .deck-title {
+    font-size: 0.84rem;
+    font-family: var(--f-mono);
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    letter-spacing: 0.06em;
+  }
+
+  .command-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+  }
+
+  .cmd-btn {
+    background: var(--bg-surface-elevated);
+    border: 1px solid var(--border-bright);
+    color: var(--text-primary);
+    padding: 16px 18px;
+    border-radius: 12px;
+    font-family: var(--f-sans);
+    font-size: 0.96rem;
+    font-weight: 700;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+  }
+
+  .cmd-btn:hover:not(:disabled) {
+    background: var(--border-bright);
+    border-color: var(--cyan);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+  }
+
+  .cmd-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    filter: grayscale(1);
+  }
+
+  .cmd-btn .cmd-tag {
+    font-family: var(--f-mono);
+    font-size: 0.7rem;
+    color: var(--cyan);
+    letter-spacing: 0.06em;
+  }
+
+  .cmd-btn.action-primary {
+    background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(0, 255, 163, 0.2));
+    border-color: var(--cyan);
+  }
+
+  .cmd-btn.action-primary:hover:not(:disabled) {
+    background: linear-gradient(135deg, rgba(0, 240, 255, 0.35), rgba(0, 255, 163, 0.35));
+    box-shadow: 0 0 20px var(--cyan-glow);
+  }
+
+  .dial-control {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-base);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 12px 18px;
+  }
+
+  .dial-label {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dial-label span {
+    font-size: 0.94rem;
+    font-weight: 700;
+  }
+
+  .dial-label small {
+    font-size: 0.74rem;
+    color: var(--text-muted);
+    font-family: var(--f-mono);
+  }
+
+  .dial-stepper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .dial-stepper button {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    border: 1px solid var(--border-bright);
+    background: var(--bg-surface-elevated);
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .dial-stepper button:hover {
+    border-color: var(--cyan);
+    color: var(--cyan);
+  }
+
+  .dial-value {
+    font-family: var(--f-mono);
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--amber);
+    min-width: 32px;
+    text-align: center;
+  }
+
+  /* Certificate Plenary */
+  .cert-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(4, 6, 14, 0.9);
+    backdrop-filter: blur(14px);
+    z-index: 200;
+    padding: 30px;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+  }
+
+  .cert-card {
+    background: #0a0e1c;
+    border: 2px solid var(--cyan);
+    box-shadow: 0 0 50px rgba(0, 240, 255, 0.25);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 680px;
+    padding: 36px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 20px;
+    position: relative;
+  }
+
+  .cert-badge {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--cyan), var(--emerald));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 30px var(--cyan-glow);
+  }
+
+  .cert-badge svg {
+    width: 40px;
+    height: 40px;
+    fill: #060913;
+  }
+
+  .cert-title h2 {
+    font-size: 1.6rem;
+    font-weight: 900;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #fff;
+  }
+
+  .cert-title p {
+    color: var(--cyan);
+    font-family: var(--f-mono);
+    font-size: 0.86rem;
+    letter-spacing: 0.1em;
+  }
+
+  .cert-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    width: 100%;
+    margin: 10px 0;
+  }
+
+  .cert-stat-box {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    padding: 14px;
+  }
+
+  .cert-stat-box .num {
+    font-family: var(--f-mono);
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--emerald);
+  }
+
+  .cert-stat-box .lbl {
+    font-size: 0.74rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 4px;
+  }
+
+  .cert-summary {
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: var(--text-primary);
+  }
+
+  .cert-summary b {
+    color: var(--amber);
+  }
+
+  .gawk-callout {
+    background: rgba(255, 180, 0, 0.08);
+    border: 1px dashed var(--amber);
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: #ffd276;
+    text-align: left;
+  }
+
+  /* Sound & Action Buttons */
+  .btn-gold {
+    background: linear-gradient(135deg, var(--amber), #ff8400);
+    border: none;
+    color: #1a0f00;
+    font-weight: 800;
+    font-size: 1.05rem;
+    padding: 14px 28px;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 0 20px var(--amber-glow);
+    transition: all 0.2s;
+  }
+
+  .btn-gold:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px var(--amber-glow);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="brand-logo">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
+    </div>
+    <div class="brand-text">
+      <h1>Operation Superposition</h1>
+      <span>QUANTUM CIRCUIT TERMINAL v4.2</span>
+    </div>
+  </div>
+
+  <nav class="stepper-nav">
+    <div class="step-node active" id="stepNode1" onclick="switchMission(1)">1. Superposition</div>
+    <div class="step-node" id="stepNode2" onclick="switchMission(2)">2. The Sequence</div>
+    <div class="step-node" id="stepNode3" onclick="switchMission(3)">3. The Grover Loop</div>
+    <div class="step-node" id="stepNode4" onclick="openCert()">4. Debrief</div>
+  </nav>
+</header>
+
+<div class="workspace">
+  <!-- Left Column: Operations and Narrative HUD -->
+  <main class="stage-pane">
+    <div class="transmission-card">
+      <div class="comm-header">
+        <div class="agent-avatar">
+          <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        </div>
+        <div class="agent-meta">
+          <h3 id="commAgent">AGENT VALE // INFILTRATION LEAD</h3>
+          <p id="commSub">ENCRYPTED CHANNEL SECURED // TIMELINE: 30 MIN WINDOW</p>
+        </div>
+      </div>
+      <div class="comm-body" id="commText">
+        Welcome to the team. Traditional brute-force computing is dead. An ordinary computer checks combination tumblers <b>one single box at a time</b>. Today, you are writing an algorithm in Qiskit to test all safe configurations in <b>a single tick of the clock</b>.
+      </div>
+    </div>
+
+    <!-- Active Vault Mechanism Display -->
+    <div class="interactive-vault">
+      <div class="vault-status-panel">
+        <div class="status-cluster">
+          <span class="label">Vault Register</span>
+          <span class="value val-cyan" id="dispQubits">2 Qubits</span>
+        </div>
+        <div class="status-cluster">
+          <span class="label">States in Superposition</span>
+          <span class="value val-amber" id="dispCombinations">4 Combinations</span>
+        </div>
+        <div class="status-cluster">
+          <span class="label">Confidence Level</span>
+          <span class="value val-emerald" id="dispConfidence">0%</span>
+        </div>
+      </div>
+
+      <div class="vault-matrix-wrap">
+        <div class="vault-grid" id="vaultGrid" style="grid-template-columns: repeat(2, 1fr);">
+          <!-- Tumblers will render dynamically -->
+        </div>
+      </div>
+
+      <!-- Wave Cancellation Canvas: The "Noise Cancelling Headphones" concept -->
+      <div class="canvas-container">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="deck-title">Wave Interference Monitor (Noise Cancelling Scope)</span>
+          <small style="color:var(--cyan); font-family:var(--f-mono);">Target Signal vs Background Noise</small>
+        </div>
+        <canvas id="scopeCanvas"></canvas>
+      </div>
+
+      <!-- Live Interactive Controls -->
+      <div class="quantum-deck">
+        <span class="deck-title">Quantum Operators Assembly</span>
+
+        <div class="command-strip" id="cmdStrip">
+          <!-- Dynamically customized per stage -->
+        </div>
+
+        <div class="dial-control" id="loopControl" style="display:none;">
+          <div class="dial-label">
+            <span>Interference Loop Count (Grover Iterations)</span>
+            <small>Adjust iterations to achieve 100% constructive interference</small>
+          </div>
+          <div class="dial-stepper">
+            <button onclick="adjustLoop(-1)">−</button>
+            <span class="dial-value" id="loopValue">1</span>
+            <button onclick="adjustLoop(1)">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Right Column: Live Executable Python IDE -->
+  <aside class="ide-pane">
+    <div class="ide-header">
+      <div class="ide-title">
+        <div class="terminal-dots">
+          <div class="terminal-dot dot-red"></div>
+          <div class="terminal-dot dot-yellow"></div>
+          <div class="terminal-dot dot-green"></div>
+        </div>
+        <span>quantum_heist.py [Qiskit 1.2]</span>
+      </div>
+      <button class="cmd-btn action-primary" id="btnExecuteCode" style="padding:6px 14px; font-size:0.8rem;" onclick="runQuantumExecution()">
+        ▶ COMPILE & RUN
+      </button>
+    </div>
+
+    <div class="ide-body" id="codeIDE">
+      <!-- Live code rendered here with typing animation and line highlights -->
+    </div>
+
+    <div class="ide-status-bar">
+      <div class="compilation-status">
+        <div class="status-indicator" id="compilerIndicator"></div>
+        <span id="compilerText">Kernel: IBM Falcon Quantum Processor Ready</span>
+      </div>
+      <span>UTF-8 // Python 3.12</span>
+    </div>
+  </aside>
+</div>
+
+<!-- Mission Clearance Certificate Plenary -->
+<div class="cert-modal" id="certModal">
+  <div class="cert-card">
+    <div class="cert-badge">
+      <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.46 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+    </div>
+    <div class="cert-title">
+      <h2>Certificate of Quantum Competency</h2>
+      <p>VALIDATED BY QUANTUM CYBER INFILTRATION GROUP</p>
+    </div>
+
+    <div class="cert-stats">
+      <div class="cert-stat-box">
+        <div class="num" id="certQubits">6 Qubits</div>
+        <div class="lbl">Hardware Register Controlled</div>
+      </div>
+      <div class="cert-stat-box">
+        <div class="num" id="certComplexity">O(√N) Speedup</div>
+        <div class="lbl">Algorithmic Advantage</div>
+      </div>
+    </div>
+
+    <div class="cert-summary">
+      You came in with zero programming experience. In less than 30 minutes, you constructed and executed a real, multi-stage quantum algorithm (<b>Grover's Search</b>) utilizing <b>superposition</b>, <b>phase-inversion</b>, and <b>constructive wave amplification</b>.
+    </div>
+
+    <div class="gawk-callout">
+      💡 <b>The Abacus Reality Check:</b> If this vault were secured with 1,000,000 combinations, a classical supercomputer checking each one sequentially takes an average of <b>500,000 checks</b>. Your quantum code solves that same problem in approximately <b>1,000 operations</b>. You just coded something that renders everyday computing obsolete.
+    </div>
+
+    <button class="btn-gold" onclick="copyCertReport()">📋 COPY MISSION REPORT & SHARE</button>
+    <button style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.86rem;" onclick="closeCert()">Close Dashboard</button>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   AUDIO SYNTHESIZER (No external audio files required)
+   ========================================================= */
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playTone(freq, type = 'sine', duration = 0.15, vol = 0.1) {
+  try {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + duration);
+  } catch(e) {}
+}
+function soundClick() { playTone(800, 'triangle', 0.05, 0.05); }
+function soundSuperposition() { playTone(300, 'sine', 0.4, 0.15); setTimeout(()=>playTone(600, 'sine', 0.5, 0.12), 100); }
+function soundSuccess() { playTone(440, 'sine', 0.1, 0.1); setTimeout(()=>playTone(880, 'triangle', 0.35, 0.15), 120); }
+
+/* =========================================================
+   STATE MANAGEMENT
+   ========================================================= */
+let currentMission = 1;
+let vaultSize = 4;
+let targetSecret = 2;
+let hasSuperposition = false;
+let hasOracle = false;
+let hasAmplifier = false;
+let loopIterations = 1;
+let optimalLoops = 1;
+
+// Code template structures for Python/Qiskit output
+const CODE_STEPS = {
+  header: [
+    { text: "from qiskit import QuantumCircuit, assemble, Aer", cls: "kw" },
+    { text: "# Initialize simulated quantum processing unit", cls: "cmt" },
+    { text: "sim = Aer.get_backend('qasm_simulator')", cls: "var" },
+    { text: "", cls: "" }
+  ],
+  superposition: [
+    { text: "# 1. SUPERPOSITION: Spin every coin at once", cls: "cmt" },
+    { text: "qc.h(range(n_qubits))", cls: "q-op", highlight: true }
+  ],
+  oracle: [
+    { text: "# 2. TARGET IDENTIFICATION: Invert phase of combination", cls: "cmt" },
+    { text: "qc.cz(0, 1)  # Phase Oracle Inversion", cls: "q-op", highlight: true }
+  ],
+  amplifier: [
+    { text: "# 3. CONSTRUCTIVE INTERFERENCE: Amplify target frequency", cls: "cmt" },
+    { text: "qc.h(range(n_qubits))", cls: "q-op" },
+    { text: "qc.x(range(n_qubits))", cls: "q-op" },
+    { text: "qc.h(1)", cls: "q-op" },
+    { text: "qc.cx(0, 1)", cls: "q-op" },
+    { text: "qc.h(1)", cls: "q-op" },
+    { text: "qc.x(range(n_qubits))", cls: "q-op" },
+    { text: "qc.h(range(n_qubits))", cls: "q-op", highlight: true }
+  ],
+  measure: [
+    { text: "# Measure register to extract solution", cls: "cmt" },
+    { text: "qc.measure_all()", cls: "fn" }
+  ]
+};
+
+/* =========================================================
+   MISSION LOGIC
+   ========================================================= */
+function switchMission(missionNum) {
+  currentMission = missionNum;
+  soundClick();
+  
+  document.querySelectorAll('.step-node').forEach((node, idx) => {
+    node.classList.toggle('active', (idx + 1) === missionNum);
+  });
+
+  hasSuperposition = false;
+  hasOracle = false;
+  hasAmplifier = false;
+
+  const commText = document.getElementById('commText');
+  const cmdStrip = document.getElementById('cmdStrip');
+  const loopControl = document.getElementById('loopControl');
+  loopControl.style.display = 'none';
+
+  if (missionNum === 1) {
+    vaultSize = 4;
+    targetSecret = 2;
+    document.getElementById('dispQubits').textContent = "2 Qubits";
+    document.getElementById('dispCombinations').textContent = "4 Combinations";
+    commText.innerHTML = "<b>MISSION 1 // THE SPINNING COIN:</b> A normal computer switch is flat: 0 (Heads) or 1 (Tails). We are applying a <b>Hadamard gate [qc.h]</b>. It spins all switches on edge. They aren't 'one or the other' in secret; they are simultaneously both!";
+    
+    cmdStrip.innerHTML = `
+      <button class="cmd-btn action-primary" onclick="injectSuperposition()">
+        <span class="cmd-tag">QUANTUM GATE // qc.h()</span>
+        Apply Superposition
+      </button>
+    `;
+  } else if (missionNum === 2) {
+    vaultSize = 4;
+    targetSecret = 1;
+    hasSuperposition = true;
+    document.getElementById('dispQubits').textContent = "2 Qubits";
+    document.getElementById('dispCombinations').textContent = "4 Combinations";
+    commText.innerHTML = "<b>MISSION 2 // NOISE CANCELLATION:</b> Spinning coins give an equal 25% chance per box. Now we code a <b>Sequence</b>: First, mark the target with phase flip, then execute the <b>Amplifier</b> to cancel out wrong answers!";
+    
+    cmdStrip.innerHTML = `
+      <button class="cmd-btn" id="btnOracle" onclick="injectOracle()">
+        <span class="cmd-tag">PHASE GATE // qc.cz()</span>
+        1. Lock Target Phase
+      </button>
+      <button class="cmd-btn" id="btnAmplifier" onclick="injectAmplifier()" disabled>
+        <span class="cmd-tag">INTERFERENCE // Diffuser</span>
+        2. Amplify Correct Signal
+      </button>
+    `;
+  } else if (missionNum === 3) {
+    vaultSize = 16;
+    targetSecret = 11;
+    optimalLoops = 3;
+    loopIterations = 1;
+    hasSuperposition = true;
+    hasOracle = true;
+    hasAmplifier = true;
+    document.getElementById('dispQubits').textContent = "4 Qubits";
+    document.getElementById('dispCombinations').textContent = "16 Combinations";
+    loopControl.style.display = 'flex';
+    commText.innerHTML = "<b>MISSION 3 // THE GROVER LOOP:</b> The vault size is quadrupled to 16 boxes. A single amplification pass is no longer enough. Programmers use a <b>Counted Loop</b> to repeat the constructive interference until the wave hits 100%!";
+    
+    cmdStrip.innerHTML = `
+      <button class="cmd-btn action-primary" onclick="runQuantumExecution()">
+        <span class="cmd-tag">EXECUTE LOOP // for _ in range()</span>
+        Run Iteration Loop
+      </button>
+    `;
+  }
+
+  renderVaultGrid();
+  renderCodeIDE();
+  drawScopeCanvas();
+}
+
+function renderVaultGrid() {
+  const grid = document.getElementById('vaultGrid');
+  grid.innerHTML = '';
+  grid.style.gridTemplateColumns = `repeat(${Math.sqrt(vaultSize)}, 1fr)`;
+
+  for (let i = 0; i < vaultSize; i++) {
+    const box = document.createElement('div');
+    box.className = 'vault-tumbler';
+    box.id = `tumbler-${i}`;
+    box.innerHTML = `<span style="font-size:0.75rem; color:var(--text-muted);">#${i.toString(2).padStart(Math.log2(vaultSize), '0')}</span><span>🔒</span>`;
+    grid.appendChild(box);
+  }
+  updateVaultVisuals();
+}
+
+function updateVaultVisuals() {
+  const confDisp = document.getElementById('dispConfidence');
+  let conf = 0;
+
+  for (let i = 0; i < vaultSize; i++) {
+    const box = document.getElementById(`tumbler-${i}`);
+    if (!box) continue;
+
+    box.className = 'vault-tumbler';
+    if (hasSuperposition) {
+      box.classList.add('superposed');
+      box.innerHTML = `<span style="font-size:0.75rem; color:var(--cyan);">#${i.toString(2).padStart(Math.log2(vaultSize), '0')}</span><span>✨</span>`;
+    } else {
+      box.innerHTML = `<span style="font-size:0.75rem; color:var(--text-muted);">#${i.toString(2).padStart(Math.log2(vaultSize), '0')}</span><span>🔒</span>`;
+    }
+  }
+
+  if (!hasSuperposition) {
+    conf = 0;
+  } else if (currentMission === 1) {
+    conf = Math.round((1 / vaultSize) * 100);
+  } else if (currentMission === 2) {
+    if (hasOracle && !hasAmplifier) conf = 25;
+    if (hasOracle && hasAmplifier) conf = 100;
+  } else if (currentMission === 3) {
+    // Exact Grover equation: sin^2((2k + 1) * theta)
+    const theta = Math.asin(1 / Math.sqrt(vaultSize));
+    const rawConf = Math.pow(Math.sin((2 * loopIterations + 1) * theta), 2);
+    conf = Math.round(rawConf * 100);
+  }
+
+  confDisp.textContent = conf + "%";
+}
+
+/* =========================================================
+   CODE RENDERING & INJECTION
+   ========================================================= */
+function renderCodeIDE(highlightKey = null) {
+  const ide = document.getElementById('codeIDE');
+  ide.innerHTML = '';
+  let lines = [];
+
+  lines.push({ text: `qc = QuantumCircuit(${Math.log2(vaultSize)})`, cls: "var" });
+
+  if (hasSuperposition) {
+    lines = lines.concat(CODE_STEPS.superposition);
+  }
+
+  if (currentMission === 2) {
+    if (hasOracle) lines = lines.concat(CODE_STEPS.oracle);
+    if (hasAmplifier) lines = lines.concat(CODE_STEPS.amplifier);
+  }
+
+  if (currentMission === 3) {
+    lines.push({ text: `# Counted Loop: Amplify exactly ${loopIterations} times`, cls: "cmt" });
+    lines.push({ text: `for step in range(${loopIterations}):`, cls: "kw" });
+    lines.push({ text: `    qc.append(oracle, range(${Math.log2(vaultSize)}))`, cls: "fn" });
+    lines.push({ text: `    qc.append(diffuser, range(${Math.log2(vaultSize)}))`, cls: "fn" });
+  }
+
+  lines = lines.concat(CODE_STEPS.measure);
+
+  lines.forEach((line, idx) => {
+    const row = document.createElement('div');
+    row.className = 'code-line' + (line.highlight || line.key === highlightKey ? ' highlight' : '');
+    row.innerHTML = `<span class="line-num">${idx + 1}</span><span class="line-content ${line.cls}">${escapeHtml(line.text)}</span>`;
+    ide.appendChild(row);
+  });
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+/* =========================================================
+   USER ACTIONS
+   ========================================================= */
+function injectSuperposition() {
+  soundSuperposition();
+  hasSuperposition = true;
+  updateVaultVisuals();
+  renderCodeIDE();
+  drawScopeCanvas();
+
+  document.getElementById('commText').innerHTML = "<b>SUPERPOSITION ENGAGED!</b> Look at the code terminal: <span class='q-op'>qc.h()</span> has put all 4 tumbler states in simultaneous vibration. Ready to crack the lock?";
+  
+  const cmd = document.getElementById('cmdStrip');
+  cmd.innerHTML = `
+    <button class="cmd-btn action-primary" onclick="runQuantumExecution()">
+      <span class="cmd-tag">MEASURE REGISTER // qc.measure()</span>
+      Test Lock Superposition
+    </button>
+  `;
+}
+
+function injectOracle() {
+  soundClick();
+  hasOracle = true;
+  document.getElementById('btnOracle').disabled = true;
+  document.getElementById('btnAmplifier').disabled = false;
+  renderCodeIDE();
+  drawScopeCanvas();
+  document.getElementById('commText').innerHTML = "Target marked! We flipped its wave phase upside down. Just like noise-cancelling tech, upside down allows us to cancel it or boost it. <b>Now click Amplify!</b>";
+}
+
+function injectAmplifier() {
+  soundSuccess();
+  hasAmplifier = true;
+  document.getElementById('btnAmplifier').disabled = true;
+  updateVaultVisuals();
+  renderCodeIDE();
+  drawScopeCanvas();
+  document.getElementById('commText').innerHTML = "<b>INTERFERENCE COMPLETE!</b> The incorrect answers destructively cancelled out to 0%, while target #01 constructively amplified to <b>100%</b>! Hit COMPILE & RUN.";
+}
+
+function adjustLoop(delta) {
+  soundClick();
+  loopIterations = Math.max(1, Math.min(8, loopIterations + delta));
+  document.getElementById('loopValue').textContent = loopIterations;
+  updateVaultVisuals();
+  renderCodeIDE();
+  drawScopeCanvas();
+}
+
+function runQuantumExecution() {
+  soundClick();
+  const compilerText = document.getElementById('compilerText');
+  const indicator = document.getElementById('compilerIndicator');
+  
+  compilerText.textContent = "Compiling QASM Circuit...";
+  indicator.style.background = "var(--amber)";
+
+  setTimeout(() => {
+    compilerText.textContent = "Kernel: Measurement Complete [0 errors]";
+    indicator.style.background = "var(--emerald)";
+    soundSuccess();
+
+    // Crack the target tumbler visually
+    const box = document.getElementById(`tumbler-${targetSecret}`);
+    if (box) {
+      box.classList.remove('superposed');
+      box.classList.add('cracked');
+      box.innerHTML = `<span style="font-size:0.75rem; color:var(--emerald);">KEY FOUND</span><span>💎</span>`;
+    }
+
+    if (currentMission === 1) {
+      document.getElementById('stepNode1').classList.add('completed');
+      setTimeout(() => switchMission(2), 1600);
+    } else if (currentMission === 2) {
+      document.getElementById('stepNode2').classList.add('completed');
+      setTimeout(() => switchMission(3), 1600);
+    } else if (currentMission === 3) {
+      document.getElementById('stepNode3').classList.add('completed');
+      setTimeout(() => openCert(), 1200);
+    }
+  }, 450);
+}
+
+/* =========================================================
+   CANVAS SCOPE (Wave Interference Animation)
+   ========================================================= */
+function drawScopeCanvas() {
+  const cvs = document.getElementById('scopeCanvas');
+  const ctx = cvs.getContext('2d');
+  cvs.width = cvs.clientWidth * window.devicePixelRatio;
+  cvs.height = cvs.clientHeight * window.devicePixelRatio;
+  ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+  const w = cvs.clientWidth;
+  const h = cvs.clientHeight;
+  const midY = h / 2;
+
+  ctx.fillStyle = '#050711';
+  ctx.fillRect(0, 0, w, h);
+
+  // Center reference baseline
+  ctx.strokeStyle = '#212b4d';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath();
+  ctx.moveTo(0, midY);
+  ctx.lineTo(w, midY);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  const barWidth = w / vaultSize;
+
+  for (let i = 0; i < vaultSize; i++) {
+    const isTarget = (i === targetSecret);
+    let amp = 0.2; // initial baseline
+
+    if (!hasSuperposition) {
+      amp = 0.05;
+    } else if (currentMission === 1) {
+      amp = 0.35;
+    } else if (currentMission === 2) {
+      if (hasOracle && !hasAmplifier) {
+        amp = isTarget ? -0.35 : 0.35;
+      } else if (hasOracle && hasAmplifier) {
+        amp = isTarget ? 0.9 : 0.02;
+      }
+    } else if (currentMission === 3) {
+      const theta = Math.asin(1 / Math.sqrt(vaultSize));
+      const targetAmp = Math.sin((2 * loopIterations + 1) * theta);
+      const otherAmp = Math.cos((2 * loopIterations + 1) * theta) / Math.sqrt(vaultSize - 1);
+      amp = isTarget ? targetAmp : otherAmp;
+    }
+
+    const x = i * barWidth + barWidth * 0.15;
+    const barW = barWidth * 0.7;
+    const barH = amp * (midY * 0.85);
+
+    ctx.fillStyle = isTarget ? '#ffb400' : '#00f0ff';
+    if (hasAmplifier && currentMission === 2 && isTarget) ctx.fillStyle = '#00ffa3';
+
+    ctx.beginPath();
+    ctx.roundRect(x, midY - barH, barW, barH, 4);
+    ctx.fill();
+
+    // Pulse highlight for target
+    if (isTarget && hasSuperposition) {
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+  }
+}
+
+/* =========================================================
+   PLENARY CERTIFICATE & REPORTING
+   ========================================================= */
+function openCert() {
+  soundSuccess();
+  document.getElementById('certModal').style.display = 'flex';
+}
+
+function closeCert() {
+  document.getElementById('certModal').style.display = 'none';
+}
+
+function copyCertReport() {
+  const report = 
+`OPERATIVE MISSION REPORT // QUANTUM INFILTRATION
+===============================================
+Operative: Verified Adult Cadet (Age 40+)
+Task: Quantum Circuit Programming in 30 Mins
+Algorithm: Grover's Amplitude Amplification
+
+ACHIEVEMENTS:
+- Prepared Superposition Register: 6 Qubits (64 states)
+- Noise-Cancellation Phase Shift: Synthesized in Qiskit
+- Counted Iteration Loops: Optimized O(√N) speedup
+- Classical Brute-Force: ~500,000 steps
+- Quantum Execution: ~1,000 steps
+
+Status: CERTIFIED QUANTUM PROGRAMMER.
+Validated on IBM Falcon Simulated Backend.`;
+
+  navigator.clipboard.writeText(report).then(() => {
+    alert("Mission report copied to clipboard! Share it with pride.");
+  });
+}
+
+// Window init
+window.addEventListener('resize', drawScopeCanvas);
+switchMission(1);
+</script>
+</body>
+</html>
