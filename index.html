@@ -3,17 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OPERATION: QUANTUM SAFECRACKER</title>
+<title>OPERATION: CIPHER BREACH // Quantum Cryptanalysis</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700;900&family=Fira+Code:wght@400;600;700&family=Outfit:wght@400;600;700;900&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg-base: #070a12;
-    --bg-panel: #0e1424;
-    --bg-card: #151d33;
-    --border: #243050;
-    --border-bright: #3f5284;
+    --bg-base: #060913;
+    --bg-panel: #0d1326;
+    --bg-card: #151d38;
+    --border: #233054;
+    --border-glow: #3a4f8a;
     --gold: #ffb800;
     --gold-glow: rgba(255, 184, 0, 0.4);
     --cyan: #00f0ff;
@@ -22,7 +22,7 @@
     --emerald: #00ffa3;
     --emerald-glow: rgba(0, 255, 163, 0.4);
     --text-main: #f0f4ff;
-    --text-muted: #8797ba;
+    --text-muted: #7e90ba;
     --f-title: 'Chakra Petch', sans-serif;
     --f-main: 'Outfit', sans-serif;
     --f-code: 'Fira Code', monospace;
@@ -39,16 +39,16 @@
     overflow-x: hidden;
     user-select: none;
     background-image:
-      radial-gradient(circle at 10% 15%, rgba(0, 240, 255, 0.07) 0%, transparent 45%),
-      radial-gradient(circle at 90% 85%, rgba(255, 184, 0, 0.05) 0%, transparent 45%),
+      radial-gradient(circle at 15% 15%, rgba(0, 240, 255, 0.08) 0%, transparent 45%),
+      radial-gradient(circle at 85% 85%, rgba(255, 184, 0, 0.06) 0%, transparent 45%),
       linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
       linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
-    background-size: 100% 100%, 100% 100%, 36px 36px, 36px 36px;
+    background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
   }
 
   /* TOP HUD */
   header {
-    background: rgba(14, 20, 36, 0.95);
+    background: rgba(13, 19, 38, 0.95);
     backdrop-filter: blur(12px);
     border-bottom: 2px solid var(--border);
     padding: 14px 28px;
@@ -63,12 +63,12 @@
   .brand-logo {
     width: 40px; height: 40px;
     border-radius: 8px;
-    border: 2px solid var(--gold);
+    border: 2px solid var(--cyan);
     display: flex; align-items: center; justify-content: center;
-    background: rgba(255, 184, 0, 0.1);
-    box-shadow: 0 0 16px var(--gold-glow);
+    background: rgba(0, 240, 255, 0.1);
+    box-shadow: 0 0 16px var(--cyan-glow);
   }
-  .brand-logo svg { width: 24px; height: 24px; fill: var(--gold); }
+  .brand-logo svg { width: 24px; height: 24px; fill: var(--cyan); }
   .brand-text h1 {
     font-family: var(--f-title);
     font-size: 1.2rem;
@@ -97,16 +97,16 @@
     color: var(--text-muted);
     font-family: var(--f-title);
     font-weight: 700;
-    font-size: 0.86rem;
+    font-size: 0.84rem;
     padding: 8px 16px;
     border-radius: 20px;
     cursor: pointer;
     transition: all 0.2s;
   }
   .nav-btn.active {
-    background: var(--gold);
-    color: #070a12;
-    box-shadow: 0 0 14px var(--gold-glow);
+    background: var(--cyan);
+    color: #060913;
+    box-shadow: 0 0 14px var(--cyan-glow);
   }
   .nav-btn.done {
     color: var(--emerald);
@@ -117,15 +117,15 @@
   .workspace {
     flex: 1;
     display: grid;
-    grid-template-columns: 1.15fr 0.85fr;
+    grid-template-columns: 1.2fr 0.8fr;
     height: calc(100vh - 72px);
   }
-  @media (max-width: 1050px) {
+  @media (max-width: 1080px) {
     .workspace { grid-template-columns: 1fr; height: auto; }
   }
 
-  /* LEFT OPERATIONAL PANE */
-  .ops-pane {
+  /* LEFT OPS CHAMBER */
+  .ops-chamber {
     padding: 24px 32px;
     overflow-y: auto;
     display: flex;
@@ -133,10 +133,10 @@
     gap: 20px;
   }
 
-  .transmission-bar {
+  .transmission-box {
     background: var(--bg-panel);
     border: 1px solid var(--border);
-    border-left: 5px solid var(--gold);
+    border-left: 5px solid var(--cyan);
     border-radius: 12px;
     padding: 16px 20px;
     display: flex;
@@ -146,16 +146,16 @@
   .avatar {
     width: 48px; height: 48px;
     border-radius: 10px;
-    background: rgba(255, 184, 0, 0.1);
-    border: 1px solid var(--gold);
+    background: rgba(0, 240, 255, 0.1);
+    border: 1px solid var(--cyan);
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
   }
-  .avatar svg { width: 28px; height: 28px; fill: var(--gold); }
+  .avatar svg { width: 28px; height: 28px; fill: var(--cyan); }
   .tx-text h4 {
     font-family: var(--f-title);
     font-size: 0.82rem;
-    color: var(--gold);
+    color: var(--cyan);
     letter-spacing: 0.08em;
   }
   .tx-text p {
@@ -163,7 +163,7 @@
     line-height: 1.5;
     margin-top: 4px;
   }
-  .tx-text b { color: var(--cyan); }
+  .tx-text b { color: var(--gold); }
 
   .task-callout {
     background: linear-gradient(90deg, rgba(0, 240, 255, 0.15), rgba(255, 184, 0, 0.08));
@@ -178,10 +178,10 @@
   }
   .task-callout svg { width: 24px; height: 24px; fill: var(--cyan); flex-shrink: 0; }
 
-  /* VAULT STAGE */
-  .vault-stage {
-    background: radial-gradient(circle at 50% 50%, #151d33 0%, #0c111e 100%);
-    border: 2px solid var(--border-bright);
+  /* CIPHER STAGE */
+  .cipher-stage {
+    background: radial-gradient(circle at 50% 50%, #151d38 0%, #0c1122 100%);
+    border: 2px solid var(--border-glow);
     border-radius: 16px;
     padding: 24px;
     display: flex;
@@ -191,120 +191,69 @@
     box-shadow: inset 0 0 40px rgba(0,0,0,0.6);
   }
 
-  /* 3D COIN */
-  .coin-wrap {
-    perspective: 1000px;
+  /* ROTARY CIPHER WHEEL */
+  .cipher-wheel-box {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 16px;
-    padding: 10px;
+    width: 100%;
   }
-  .coin {
-    width: 130px; height: 130px;
-    position: relative;
-    transform-style: preserve-3d;
-    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  .wheel-display {
+    display: flex;
+    gap: 8px;
+    font-family: var(--f-code);
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: 0.15em;
   }
-  .coin.spinning {
-    animation: spinCoin 0.35s linear infinite;
+  .char-cell {
+    width: 60px; height: 75px;
+    background: #090e1c;
+    border: 2px solid var(--border-glow);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
+    transition: all 0.2s;
   }
-  @keyframes spinCoin {
-    0% { transform: rotateY(0deg); }
-    100% { transform: rotateY(360deg); }
-  }
-  .coin-face {
-    position: absolute; inset: 0;
-    border-radius: 50%;
-    backface-visibility: hidden;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    font-family: var(--f-title);
-    font-weight: 900; font-size: 1.35rem;
-    border: 5px solid #fff;
-    box-shadow: 0 0 25px var(--gold-glow), inset 0 0 15px rgba(0,0,0,0.6);
-  }
-  .coin-heads {
-    background: radial-gradient(circle at 35% 35%, #fff1a8, #ffb800 65%, #8c5700);
-    color: #2b1700;
-  }
-  .coin-tails {
-    background: radial-gradient(circle at 35% 35%, #b6f8ff, #00c8ff 65%, #004d66);
-    color: #002330;
-    transform: rotateY(180deg);
+  .char-cell.highlight {
+    border-color: var(--cyan);
+    color: var(--cyan);
+    box-shadow: 0 0 20px var(--cyan-glow);
   }
 
-  /* VAULT DRAWERS */
-  .safe-grid {
-    display: grid;
-    gap: 14px;
+  .dial-controller {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-card);
+    border: 2px solid var(--border);
+    padding: 14px 22px;
+    border-radius: 12px;
     width: 100%;
     max-width: 480px;
   }
-  .safe-drawer {
-    aspect-ratio: 1;
-    background: linear-gradient(145deg, #1b253d, #0f1524);
-    border: 2px solid var(--border);
-    border-radius: 12px;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    cursor: pointer;
-    font-family: var(--f-code);
-    font-weight: 700; font-size: 1.1rem;
-    position: relative;
-    box-shadow: inset 0 2px 4px rgba(255,255,255,0.06), 0 4px 10px rgba(0,0,0,0.5);
-    transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
-  }
-  .safe-drawer:hover:not(.checked) {
-    border-color: var(--cyan);
-    transform: translateY(-2px);
-    box-shadow: 0 0 16px var(--cyan-glow);
-  }
-  .safe-drawer.checked {
-    background: rgba(255, 42, 85, 0.12);
-    border-color: var(--red);
-    color: var(--red);
-    cursor: default;
-  }
-  .safe-drawer.vibrating {
-    background: radial-gradient(circle, rgba(0, 240, 255, 0.3) 0%, rgba(14, 20, 36, 0.9) 100%);
-    border-color: var(--cyan);
-    box-shadow: 0 0 20px var(--cyan-glow);
-    animation: quantumVibe 1.2s infinite alternate;
-  }
-  @keyframes quantumVibe {
-    0% { transform: scale(0.98); }
-    100% { transform: scale(1.03); filter: drop-shadow(0 0 8px var(--cyan)); }
-  }
-  .safe-drawer.cracked {
-    background: radial-gradient(circle, rgba(0, 255, 163, 0.4) 0%, rgba(14, 20, 36, 0.9) 100%);
-    border-color: var(--emerald);
+  .dial-btn {
+    width: 44px; height: 44px;
+    border-radius: 8px;
+    border: 2px solid var(--border-glow);
+    background: var(--bg-panel);
     color: #fff;
-    box-shadow: 0 0 40px var(--emerald-glow);
-    transform: scale(1.06);
+    font-size: 1.4rem; font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .dial-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+  .dial-label {
+    font-family: var(--f-mono);
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--gold);
+    min-width: 120px;
+    text-align: center;
   }
 
-  /* OSCILLOSCOPE */
-  .scope-box {
-    width: 100%;
-    background: #050811;
-    border: 2px solid var(--border);
-    border-radius: 12px;
-    padding: 16px;
-    display: flex; flex-direction: column; gap: 8px;
-  }
-  .scope-top {
-    display: flex; justify-content: space-between;
-    font-family: var(--f-code); font-size: 0.78rem;
-    color: var(--text-muted);
-  }
-  canvas#scopeCanvas {
-    width: 100%; height: 130px;
-    background: #020409;
-    border-radius: 6px;
-  }
-
-  /* BUTTONS & CONTROLS */
+  /* BUTTONS */
   .btn {
     background: linear-gradient(135deg, var(--cyan), #0090ff);
     border: none;
@@ -377,32 +326,24 @@
   .c-cmt { color: #768390; font-style: italic; }
   .c-qop { color: #00ffa3; font-weight: 700; }
 
-  /* DIAL CONTROL */
-  .dial-box {
-    display: flex; align-items: center; justify-content: space-between;
-    background: var(--bg-card);
-    border: 2px solid var(--border);
-    padding: 16px 20px; border-radius: 12px;
+  /* CRACK LOG CONSOLE */
+  .crack-console {
     width: 100%;
+    background: #040711;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    height: 120px;
+    overflow-y: auto;
+    font-family: var(--f-code);
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.6;
   }
-  .dial-btn {
-    width: 44px; height: 44px;
-    border-radius: 8px;
-    border: 2px solid var(--border-bright);
-    background: var(--bg-panel);
-    color: #fff;
-    font-size: 1.4rem; font-weight: 700;
-    cursor: pointer;
-  }
-  .dial-btn:hover { border-color: var(--gold); color: var(--gold); }
-  .dial-val {
-    font-family: var(--f-mono);
-    font-size: 1.8rem; font-weight: 900;
-    color: var(--gold);
-    min-width: 44px; text-align: center;
-  }
+  .crack-console .hit { color: var(--emerald); font-weight: 700; }
+  .crack-console .miss { color: var(--red); }
 
-  /* MODAL */
+  /* PLENARY MODAL */
   .modal-screen {
     display: none;
     position: fixed; inset: 0;
@@ -433,29 +374,29 @@
       <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.46 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
     </div>
     <div class="brand-text">
-      <h1>Operation Quantum Safecracker</h1>
-      <p>30-MINUTE IMMERSION // NO PRIOR TECH REQUIRED</p>
+      <h1>Operation Cipher Breach</h1>
+      <p>30-MINUTE CRYPTANALYSIS // ADULT STARTER LAB</p>
     </div>
   </div>
 
   <nav class="nav-strip">
-    <button class="nav-btn active" id="btnStep1" onclick="loadAct(1)">1. The Flaw</button>
-    <button class="nav-btn" id="btnStep2" onclick="loadAct(2)">2. The Coin</button>
-    <button class="nav-btn" id="btnStep3" onclick="loadAct(3)">3. Noise Cancellation</button>
-    <button class="nav-btn" id="btnStep4" onclick="loadAct(4)">4. The Loop</button>
+    <button class="nav-btn active" id="btnStep1" onclick="loadStage(1)">1. The Variable</button>
+    <button class="nav-btn" id="btnStep2" onclick="loadStage(2)">2. The Until Loop</button>
+    <button class="nav-btn" id="btnStep3" onclick="loadStage(3)">3. Key Exploder</button>
+    <button class="nav-btn" id="btnStep4" onclick="loadStage(4)">4. Quantum Annihilator</button>
     <button class="nav-btn" id="btnStep5" onclick="openPlenary()">5. Clearance</button>
   </nav>
 </header>
 
 <div class="workspace">
-  <!-- LEFT: INTERACTIVE SAFECRACKING CHAMBER -->
-  <main class="ops-pane">
+  <!-- LEFT: INTERACTIVE CRYPTANALYSIS ROOM -->
+  <main class="ops-chamber">
     <div class="transmission-bar">
       <div class="avatar">
         <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
       </div>
       <div class="tx-text">
-        <h4 id="speakerTitle">VALE // MASTER SAFECRACKER</h4>
+        <h4 id="speakerTitle">AGENT VALE // CRYPTANALYSIS SPECIALIST</h4>
         <p id="speakerMsg">Establishing encrypted radio line...</p>
       </div>
     </div>
@@ -465,8 +406,8 @@
       <span id="taskPrompt">Awaiting orders.</span>
     </div>
 
-    <div class="vault-stage" id="vaultStage">
-      <!-- Injected per Act -->
+    <div class="cipher-stage" id="cipherStage">
+      <!-- Injected per stage -->
     </div>
   </main>
 
@@ -478,12 +419,12 @@
         <div class="dot dot-y"></div>
         <div class="dot dot-g"></div>
       </div>
-      <span>quantum_vault.py</span>
-      <span style="color:var(--emerald);">● IBM QPU CONNECTED</span>
+      <span>cipher_breaker.py</span>
+      <span style="color:var(--emerald);">● RUNTIME ACTIVE</span>
     </div>
 
     <div class="terminal-body" id="ideTerminal">
-      <!-- Live code appears here -->
+      <!-- Live code updates here -->
     </div>
   </aside>
 </div>
@@ -492,28 +433,27 @@
 <div class="modal-screen" id="plenaryModal">
   <div class="modal-card">
     <div style="font-family:var(--f-title); border:2px solid var(--emerald); color:var(--emerald); padding:4px 16px; border-radius:4px; font-size:1.1rem; font-weight:900; letter-spacing:0.1em;">
-      TOP SECRET // LEVEL 5 QUANTUM CLEARANCE
+      MISSION COMPLETE // TOP SECRET CLEARANCE
     </div>
 
-    <h2 style="font-family:var(--f-title); font-size:2rem; color:#fff;">OPERATION SUCCESS: THE VAULT IS CRACKED</h2>
-    <p style="color:var(--gold); font-family:var(--f-code); font-size:0.86rem;">THE DIFFERENCE BETWEEN CLASSICAL GUESSING & QUANTUM POWER</p>
+    <h2 style="font-family:var(--f-title); font-size:2rem; color:#fff;">ENCRYPTION OVERTHROWN</h2>
+    <p style="color:var(--gold); font-family:var(--f-code); font-size:0.86rem;">THE QUANTUM SHOR & GROVER IMPLICATION</p>
 
-    <!-- LIVE RACE COMPARISON ON 1,000,000 BOXES -->
     <div style="width:100%; background:#070a14; border:1px solid var(--border); border-radius:12px; padding:18px; display:flex; flex-direction:column; gap:14px; text-align:left;">
       <div>
         <div style="display:flex; justify-content:space-between; font-family:var(--f-code); font-size:0.82rem; margin-bottom:4px;">
-          <span>Normal Supercomputer (1,000,000 Safe Combinations)</span>
-          <span style="color:var(--red);">500,000 Checks [EST. 6 DAYS]</span>
+          <span>Classical Attack on 128-bit Bank Encryption</span>
+          <span style="color:var(--red);">100 Billion Years [UNBREAKABLE]</span>
         </div>
         <div style="height:14px; background:#12182b; border-radius:7px; overflow:hidden;">
-          <div style="width:1.5%; height:100%; background:var(--red);"></div>
+          <div style="width:1%; height:100%; background:var(--red);"></div>
         </div>
       </div>
 
       <div>
         <div style="display:flex; justify-content:space-between; font-family:var(--f-code); font-size:0.82rem; margin-bottom:4px;">
-          <span>Your Quantum Grover Circuit (1,000,000 Safe Combinations)</span>
-          <span style="color:var(--emerald);">1,000 Operations [0.04 SECONDS]</span>
+          <span>Quantum Algorithm Attack (Grover / Shor)</span>
+          <span style="color:var(--emerald);">Halves Bit Security to 64-bit [MINUTES]</span>
         </div>
         <div style="height:14px; background:#12182b; border-radius:7px; overflow:hidden;">
           <div style="width:100%; height:100%; background:linear-gradient(90deg, var(--emerald), var(--cyan));"></div>
@@ -522,18 +462,18 @@
     </div>
 
     <div style="background:rgba(255, 184, 0, 0.1); border:1px dashed var(--gold); border-radius:10px; padding:18px 22px; text-align:left; font-size:1rem; line-height:1.6; color:#ffe4a0;">
-      🌍 <b>Look Open-Mouthed at What You Have Achieved:</b><br>
-      There are roughly <b>8.1 billion people</b> on Earth today. Fewer than <b>0.005%</b> will ever write or comprehend a functioning quantum search algorithm in their entire lifetime. 30 minutes ago, you had zero coding background. Right now, you just compiled and executed a true <b>Grover's Wave-Amplification Search</b>. You didn't just watch it; you commanded the machine.
+      🌍 <b>The Cryptographic Shock:</b><br>
+      You started 30 minutes ago with zero tech background. In one session, you constructed a <b>Variable</b> to encode messages, deployed an <b>Until Loop</b> to break ciphers autonomously, and authored quantum code that collapses modern bank encryption keys. Less than 0.005% of the human population understands this algorithmic vulnerability. You now do.
     </div>
 
-    <button class="btn btn-gold" style="width:100%;" onclick="copyClearance()">📋 COPY MISSION CREDENTIALS</button>
-    <button style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.86rem;" onclick="closePlenary()">Return to Vault Terminal</button>
+    <button class="btn btn-gold" style="width:100%;" onclick="copyClearance()">📋 COPY CLASSIFIED CREDENTIALS</button>
+    <button style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.86rem;" onclick="closePlenary()">Return to Terminal</button>
   </div>
 </div>
 
 <script>
 /* =========================================================================
-   SYNTHESIZER SOUND ENGINE (Clicks, Tumbler Drops, Pneumatic Whistle)
+   SYNTHESIZER AUDIO ENGINE (Clicks, Mechanical Dials, Alarms, Decryption Hiss)
    ========================================================================= */
 const audio = new (window.AudioContext || window.webkitAudioContext)();
 function playSound(f, type="sine", dur=0.15, vol=0.1) {
@@ -546,416 +486,378 @@ function playSound(f, type="sine", dur=0.15, vol=0.1) {
     o.start(); o.stop(audio.currentTime + dur);
   } catch(e){}
 }
-function sfxClick() { playSound(900, "triangle", 0.05, 0.04); }
-function sfxTumbler() { playSound(140, "sine", 0.2, 0.2); }
-function sfxAlarm() {
-  playSound(420, "sawtooth", 0.3, 0.15);
-  setTimeout(()=> playSound(340, "sawtooth", 0.3, 0.15), 160);
+function sfxClick() { playSound(950, "triangle", 0.05, 0.04); }
+function sfxDial() { playSound(240, "sine", 0.12, 0.15); }
+function sfxSuccess() {
+  playSound(523.25, "sine", 0.12, 0.1);
+  setTimeout(()=> playSound(659.25, "sine", 0.15, 0.12), 90);
+  setTimeout(()=> playSound(1046.5, "triangle", 0.35, 0.15), 180);
 }
-function sfxPneumatic() {
-  playSound(90, "sine", 0.4, 0.25);
-  setTimeout(()=> playSound(550, "triangle", 0.2, 0.1), 100);
-  setTimeout(()=> playSound(880, "sine", 0.5, 0.2), 220);
+function sfxAlarm() {
+  playSound(420, "sawtooth", 0.25, 0.12);
+  setTimeout(()=> playSound(320, "sawtooth", 0.25, 0.12), 150);
 }
 
 /* =========================================================================
-   STATE & ACT ROUTER
+   STAGE ROUTER & CRYPTANALYTIC CHALLENGES
    ========================================================================= */
-let currentAct = 1;
-let classicalTries = 0;
-let targetBox = 2; // For 4-box demo
-let targetBox16 = 11; // For 16-box demo
-let loopCount = 1;
-let scopeAnim = null;
-let scopePhase = 0;
-let isFlipped = false;
-let isAmplified = false;
+let currentStage = 1;
+const ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+let plainWord = 'CODE';
+let shiftKey = 3;
+let untilTargetKey = 7;
+let untilRunning = false;
+let keyLen = 8;
 
-function loadAct(actNum) {
-  currentAct = actNum;
+function loadStage(stageNum) {
+  currentStage = stageNum;
   sfxClick();
   document.querySelectorAll('.nav-btn').forEach((b, i) => {
-    b.classList.toggle('active', i + 1 === actNum);
+    b.classList.toggle('active', i + 1 === stageNum);
   });
 
-  const stage = document.getElementById('vaultStage');
+  const stage = document.getElementById('cipherStage');
   const spk = document.getElementById('speakerTitle');
   const msg = document.getElementById('speakerMsg');
   const prompt = document.getElementById('taskPrompt');
-  if (scopeAnim) cancelAnimationFrame(scopeAnim);
 
-  if (actNum === 1) {
-    // ---------------- ACT 1: THE MANUAL FLAW ----------------
-    spk.textContent = "VALE // MASTER SAFECRACKER";
-    msg.innerHTML = "Four drawers. The diamond is in <b>just one</b>. An ordinary computer checks them the only way it knows: <b>one by one</b>. Feel how agonizingly slow this is. Start clicking drawers to find it.";
-    prompt.textContent = "CLICK ANY SAFE DRAWER BELOW TO SEARCH IT MANUALLY";
-    classicalTries = 0;
+  if (stageNum === 1) {
+    // ---------------- STAGE 1: THE VARIABLE (ENCODING) ----------------
+    spk.textContent = "VALE // INFILTRATION LEAD";
+    msg.innerHTML = "Before you can break an intercepted transmission, you must build the lock. A <b>Variable</b> is simply a labelled box in memory that holds a value. Turn the dial to change the variable <span style='color:var(--cyan); font-family:var(--f-code);'>shift_key</span> and watch the ciphertext morph!";
+    prompt.textContent = "TURN THE DIAL TO ENCODE 'CODE' INTO SECRET CIPHERTEXT";
 
     stage.innerHTML = `
-      <div style="display:flex; justify-content:space-between; width:100%; font-family:var(--f-code); font-size:0.86rem;">
-        <span>DOOR ONE: 4 SAFE DRAWERS</span>
-        <span style="color:var(--red);" id="triesDisp">TRIES SPENT: 0 / 4</span>
-      </div>
-      <div class="safe-grid" style="grid-template-columns: repeat(2, 1fr);">
-        <div class="safe-drawer" id="draw-0" onclick="checkManual(0)"><span>#00</span><span>🔒</span></div>
-        <div class="safe-drawer" id="draw-1" onclick="checkManual(1)"><span>#01</span><span>🔒</span></div>
-        <div class="safe-drawer" id="draw-2" onclick="checkManual(2)"><span>#10</span><span>🔒</span></div>
-        <div class="safe-drawer" id="draw-3" onclick="checkManual(3)"><span>#11</span><span>🔒</span></div>
-      </div>
-      <p id="classicalFeedback" style="font-family:var(--f-code); color:var(--text-muted); font-size:0.95rem;">Drawers checked: 0 of 4</p>
-    `;
-
-    renderIDE([
-      { t: "# ORDINARY LINEAR SEARCH (CLASSICAL COMPUTER)", c: "c-cmt" },
-      { t: "def check_vault_drawers(drawers, target):", c: "c-kw" },
-      { t: "    for box in drawers:  # Checked one... single... box at a time", c: "c-kw" },
-      { t: "        if box.open() == target:", c: "c-kw" },
-      { t: "            return 'DIAMOND_FOUND'", c: "c-qop" },
-      { t: "    # Notice: 1,000,000 boxes takes 500,000 checks on average!", c: "c-cmt" }
-    ]);
-  }
-  else if (actNum === 2) {
-    // ---------------- ACT 2: THE SPINNING COIN ----------------
-    spk.textContent = "OKONJO // HARDWARE LEAD";
-    msg.innerHTML = "An ordinary computer switch is flat on the desk: <b>Heads (0)</b> or <b>Tails (1)</b>. Now, look at what happens when I spin it. <b>While it spins, which is it?</b> It's genuinely a blend of both at once! That is <b>Superposition</b>.";
-    prompt.textContent = "CLICK 'SLAP HAND DOWN' TO COLLAPSE THE SPINNING STATE";
-
-    stage.innerHTML = `
-      <div class="coin-wrap">
-        <div class="coin spinning" id="theCoin">
-          <div class="coin-face coin-heads">0 // HEADS</div>
-          <div class="coin-face coin-tails">1 // TAILS</div>
+      <div class="cipher-wheel-box">
+        <div style="display:flex; justify-content:space-between; width:100%; font-family:var(--f-code); font-size:0.86rem;">
+          <span>ORIGINAL: <b style="color:#fff;">CODE</b></span>
+          <span style="color:var(--gold);" id="cipherPreview">ENCRYPTED: FRGH</span>
         </div>
-        <div style="display:flex; gap:12px; margin-top:10px;">
-          <button class="btn" id="btnSlap" onclick="slapCoin()">✋ SLAP HAND DOWN (MEASURE)</button>
-          <button class="btn btn-gold" id="btnSpin" onclick="reSpin()" style="display:none;">🔄 SPIN COIN AGAIN</button>
+        <div class="wheel-display" id="charDisplay">
+          <!-- Injected dynamically -->
         </div>
-        <p id="coinExplanation" style="text-align:center; max-width:480px; font-size:1.05rem; line-height:1.6;"></p>
-        <button class="btn btn-gold" id="btnApplyQubits" onclick="applySuperposition()" style="display:none; width:100%;">
-          ✨ APPLY SUPERPOSITION TO ALL 4 VAULT DRAWERS
+        <div class="dial-controller">
+          <button class="dial-btn" onclick="dialShift(-1)">−</button>
+          <div class="dial-label" id="dialLabel">SHIFT = 3</div>
+          <button class="dial-btn" onclick="dialShift(1)">+</button>
+        </div>
+        <button class="btn btn-gold" onclick="lockVariable()" style="width:100%; max-width:480px;">
+          🔒 LOCK VARIABLE & ADVANCE TO BREAKING
         </button>
       </div>
     `;
 
+    renderWheel();
+    updateVarIDE();
+  }
+  else if (stageNum === 2) {
+    // ---------------- STAGE 2: THE UNTIL LOOP (CRACKING) ----------------
+    spk.textContent = "OKONJO // HARDWARE ENGINEER";
+    msg.innerHTML = "We just intercepted an encrypted diplomatic wire: <b style='color:var(--cyan);'>'JVKL'</b>. We don't know the shift key. If you guess by hand, you'll be arrested. An <b>Until Loop</b> tells the computer: <i>'Keep testing keys until the decrypted text equals English words.'</i>";
+    prompt.textContent = "CLICK 'RUN UNTIL LOOP' TO BREAK THE CIPHER AT MACHINE SPEED";
+
+    untilRunning = false;
+    stage.innerHTML = `
+      <div style="display:flex; justify-content:space-between; width:100%; font-family:var(--f-code); font-size:0.86rem;">
+        <span>INTERCEPTED: <b style="color:var(--cyan);">JVKL</b></span>
+        <span style="color:var(--emerald);" id="untilStatus">READY</span>
+      </div>
+
+      <div class="wheel-display">
+        <div class="char-cell" id="u-0">J</div>
+        <div class="char-cell" id="u-1">V</div>
+        <div class="char-cell" id="u-2">K</div>
+        <div class="char-cell" id="u-3">L</div>
+      </div>
+
+      <div class="crack-console" id="crackConsole">
+        > Awaiting execution of until loop...
+      </div>
+
+      <button class="btn btn-gold" id="btnRunUntil" onclick="runUntilLoop()" style="width:100%;">
+        ⚡ RUN 'WHILE NOT CRACKED' UNTIL LOOP
+      </button>
+    `;
+
+    renderIDE([
+      { t: "# THE UNTIL LOOP (PYTHON WHILE-LOOP)", c: "c-cmt" },
+      { t: "intercepted = 'JVKL'", c: "c-kw" },
+      { t: "key = 1", c: "c-num" },
+      { t: "", c: "" },
+      { t: "# Keeps running until the finish line is reached!", c: "c-cmt" },
+      { t: "while not is_english_word(attempt):", c: "c-kw", active: true },
+      { t: "    attempt = shift_back(intercepted, key)", c: "c-fn" },
+      { t: "    key = key + 1  # Increment variable", c: "c-num" },
+      { t: "", c: "" },
+      { t: "print('CIPHER BROKEN! Key =', key)", c: "c-qop" }
+    ]);
+  }
+  else if (stageNum === 3) {
+    // ---------------- STAGE 3: THE KEY LENGTH EXPLODER ----------------
+    spk.textContent = "VALE // INFILTRATION LEAD";
+    msg.innerHTML = "A 26-letter Caesar cipher is child's play. What happens when banks use <b>long passkeys</b>? Every character you add multiplies possible combinations exponentially! Turn the slider to feel classical computing hit an impenetrable brick wall.";
+    prompt.textContent = "INCREASE KEY LENGTH TO SEE CLASSICAL COMPUTERS DROWN";
+
+    keyLen = 8;
+    stage.innerHTML = `
+      <div class="dial-controller" style="max-width:100%;">
+        <div style="text-align:left;">
+          <h4 style="font-family:var(--f-title); font-size:1rem; text-transform:uppercase;">KEY LENGTH (CHARACTERS)</h4>
+          <p style="font-size:0.78rem; font-family:var(--f-code); color:var(--text-muted);">combinations = 26^length</p>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <button class="dial-btn" onclick="adjustKeyLen(-2)">−</button>
+          <div class="dial-label" id="dispKeyLen">8</div>
+          <button class="dial-btn" onclick="adjustKeyLen(2)">+</button>
+        </div>
+      </div>
+
+      <div style="width:100%; display:grid; grid-template-columns:1fr 1fr; gap:14px; text-align:center;">
+        <div style="background:var(--bg-card); border:1px solid var(--border); padding:16px; border-radius:10px;">
+          <div style="font-family:var(--f-code); font-size:1.3rem; color:var(--gold);" id="dispCombos">208 Billion</div>
+          <div style="font-size:0.74rem; color:var(--text-muted); text-transform:uppercase; margin-top:4px;">Combinations</div>
+        </div>
+        <div style="background:var(--bg-card); border:1px solid var(--border); padding:16px; border-radius:10px;">
+          <div style="font-family:var(--f-code); font-size:1.3rem; color:var(--red);" id="dispCrackTime">2.4 Days</div>
+          <div style="font-size:0.74rem; color:var(--text-muted); text-transform:uppercase; margin-top:4px;">Classical Crack Time</div>
+        </div>
+      </div>
+
+      <div style="background:rgba(255, 42, 85, 0.1); border:1px solid var(--red); border-radius:10px; padding:14px; font-size:0.95rem; line-height:1.5;">
+        At 16 characters, an ordinary supercomputer takes <b>840,000 years</b> to crack it. This is why banks felt safe. Now let's annihilate it with quantum.
+      </div>
+
+      <button class="btn btn-gold" onclick="loadStage(4)" style="width:100%;">
+        ⚛️ UNLEASH QUANTUM ANNIHILATOR →
+      </button>
+    `;
+
+    updateKeyMetrics();
+  }
+  else if (stageNum === 4) {
+    // ---------------- STAGE 4: QUANTUM GROVER ANNIHILATOR ----------------
+    spk.textContent = "OKONJO // QUANTUM HARDWARE LEAD";
+    msg.innerHTML = "<b>THIS IS WHERE COMPUTING CHANGES FOREVER.</b> A classical computer must search $N$ keys one by one. A quantum computer running <b>Grover's Algorithm</b> searches in $\\sqrt{N}$ steps. What took 840,000 years takes <b>4 minutes</b>. Author the circuit and fire!";
+    prompt.textContent = "CLICK 'COMPILE & EXECUTE GROVER CIRCUIT' TO DESTROY THE KEY";
+
+    stage.innerHTML = `
+      <div style="width:100%; background:#070a14; border:2px solid var(--border); border-radius:12px; padding:20px; display:flex; flex-direction:column; gap:16px;">
+        <div style="display:flex; justify-content:space-between; font-family:var(--f-code); font-size:0.86rem;">
+          <span>QUANTUM REGISTER: 4 QUBITS</span>
+          <span style="color:var(--emerald);">GROVER SPEEDUP: O(√N)</span>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px;" id="qKeys">
+          <!-- 16 keys in quantum vibration -->
+        </div>
+      </div>
+
+      <button class="btn btn-gold" id="btnQuantumFire" onclick="fireQuantumAnnihilator()" style="width:100%;">
+        ⚡ COMPILE & EXECUTE GROVER CIRCUIT
+      </button>
+    `;
+
+    renderQKeys();
     renderIDE([
       { t: "from qiskit import QuantumCircuit", c: "c-kw" },
-      { t: "# VARIABLE: Prepare 2 Quantum Bits (Qubits)", c: "c-cmt" },
-      { t: "n_qubits = 2  # 2 qubits = 4 simultaneously spun states", c: "c-num" },
-      { t: "qc = QuantumCircuit(n_qubits)", c: "c-fn" },
+      { t: "# QUANTUM GROVER SEARCH OVER ENCRYPTION KEYS", c: "c-cmt" },
+      { t: "qc = QuantumCircuit(4)  # 4 qubits = 16 search states", c: "c-fn" },
+      { t: "qc.h(range(4))        # Superposition across all keys", c: "c-qop", active: true },
       { t: "", c: "" },
-      { t: "# HADAMARD GATE (qc.h): The Spinning Coin Gate", c: "c-cmt" },
-      { t: "# Spins all qubits on edge simultaneously!", c: "c-cmt" },
-      { t: "qc.h(range(n_qubits))", c: "c-qop", active: true }
+      { t: "# Grover Amplitude Amplification (Halves Key Difficulty)", c: "c-cmt" },
+      { t: "for _ in range(3):", c: "c-kw" },
+      { t: "    qc.append(oracle_phase_flip, range(4))", c: "c-fn" },
+      { t: "    qc.append(diffuser_amplify, range(4))", c: "c-fn" },
+      { t: "", c: "" },
+      { t: "qc.measure_all()  # Extracts secret key instantly!", c: "c-qop" }
     ]);
   }
-  else if (actNum === 3) {
-    // ---------------- ACT 3: NOISE CANCELLATION ----------------
-    spk.textContent = "VALE // MASTER SAFECRACKER";
-    msg.innerHTML = "Spinning coins only give an equal 25% blind guess. Here is how we guarantee 100%: <b>Noise-Cancelling Headphones</b>. Sound waves that are flipped upside-down cancel out unwanted background chatter to dead silence, leaving only the diamond's acoustic click!";
-    prompt.textContent = "CLICK '1. FLIP TARGET SOUND WAVE', THEN '2. CANCEL WRONG WAVES'";
-
-    isFlipped = false;
-    isAmplified = false;
-
-    stage.innerHTML = `
-      <div class="scope-box">
-        <div class="scope-top">
-          <span>ACOUSTIC RESONANCE OSCILLOSCOPE</span>
-          <span id="scopeResonance" style="color:var(--cyan);">Target Resonance: 25% (Equal Noise)</span>
-        </div>
-        <canvas id="scopeCanvas"></canvas>
-      </div>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; width:100%;">
-        <button class="btn" id="btnFlip" onclick="triggerFlip()">1. 🎯 FLIP TARGET SOUND WAVE</button>
-        <button class="btn btn-gold" id="btnCancel" onclick="triggerCancel()" disabled>2. 📉 CANCEL WRONG WAVES</button>
-      </div>
-      <button class="btn btn-gold" id="btnPopDoor" onclick="popDoorTwo()" style="display:none; width:100%;">
-        🔓 POP DOOR TWO IN A SINGLE QUANTUM SHOT
-      </button>
-    `;
-
-    startScope();
-    renderIDE([
-      { t: "# QUANTUM INTERFERENCE: THE NOISE CANCELLER", c: "c-cmt" },
-      { t: "# Step 1: Invert the soundwave of combination #01", c: "c-cmt" },
-      { t: "qc.cz(0, 1)  # Target flipped upside down", c: "c-qop" },
-      { t: "", c: "" },
-      { t: "# Step 2: Destructive Cancellation of Wrong Sounds (Diffuser)", c: "c-cmt" },
-      { t: "qc.h(range(2))", c: "c-qop" },
-      { t: "qc.x(range(2))", c: "c-qop" },
-      { t: "qc.cz(0, 1)", c: "c-qop" },
-      { t: "qc.x(range(2))", c: "c-qop" },
-      { t: "qc.h(range(2))  # Background sound dead; Target = 100%!", c: "c-qop", active: true }
-    ]);
-  }
-  else if (actNum === 4) {
-    // ---------------- ACT 4: THE GROVER LOOP ----------------
-    spk.textContent = "OKONJO // HARDWARE LEAD";
-    msg.innerHTML = "<b>THE MASTER VAULT: 16 DRAWERS (4 QUBITS).</b> One single sound-wave cancellation isn't enough for 16 boxes. In programming, when you repeat logic, you use a <b>Counted Loop</b>. Turn the dial to find the exact loop count that dials in 100%!";
-    prompt.textContent = "TURN THE FOR-LOOP DIAL TO DIAL IN 96% CONFIDENCE";
-
-    loopCount = 1;
-    stage.innerHTML = `
-      <div class="dial-box">
-        <div>
-          <h4 style="font-family:var(--f-title); font-size:1rem; text-transform:uppercase;">PROGRAMMING CONSTRUCT // FOR-LOOP</h4>
-          <p style="font-size:0.78rem; font-family:var(--f-code); color:var(--text-muted);">for iteration in range(loop_count):</p>
-        </div>
-        <div style="display:flex; align-items:center; gap:14px;">
-          <button class="dial-btn" onclick="dial(-1)">−</button>
-          <div class="dial-val" id="dispLoop">1</div>
-          <button class="dial-btn" onclick="dial(1)">+</button>
-        </div>
-      </div>
-
-      <div style="display:flex; justify-content:space-between; width:100%; font-family:var(--f-code); font-size:0.84rem;">
-        <span>VAULT THREE: 16 DRAWERS</span>
-        <span id="dispConf" style="color:var(--red);">CONFIDENCE: 47%</span>
-      </div>
-
-      <div class="safe-grid" id="grid16" style="grid-template-columns: repeat(4, 1fr); max-width:360px;"></div>
-
-      <button class="btn btn-gold" id="btnExtract" onclick="extractDiamond()" style="width:100%;">
-        ⚡ EXECUTE GROVER'S LOOP & EXTRACT DIAMOND
-      </button>
-    `;
-
-    renderGrid16();
-    updateLoopIDE();
-  }
 }
 
 /* =========================================================================
-   ACT 1 LOGIC: MANUAL CLASSICAL SEARCH
+   STAGE 1 LOGIC: ROTARY CAESAR SHIFT (THE VARIABLE)
    ========================================================================= */
-function checkManual(idx) {
-  const box = document.getElementById(`draw-${idx}`);
-  if (!box || box.classList.contains('checked') || box.classList.contains('cracked')) return;
-
-  classicalTries++;
-  document.getElementById('triesDisp').textContent = `TRIES SPENT: ${classicalTries} / 4`;
-
-  if (idx === targetBox) {
-    sfxPneumatic();
-    box.classList.add('cracked');
-    box.innerHTML = `<span>KEY</span><span>💎</span>`;
-    document.getElementById('classicalFeedback').innerHTML = `<b style="color:var(--emerald);">KEY FOUND!</b> Took ${classicalTries} manual check(s). A classical computer must inspect boxes one by one.`;
-    document.getElementById('btnStep1').classList.add('done');
-    document.getElementById('taskPrompt').textContent = "DOOR 1 CRACKED! PROCEED TO STEP 2 (THE COIN) TO LEARN THE SUPERPOWER.";
-    setTimeout(() => loadAct(2), 2000);
-  } else {
-    sfxAlarm();
-    box.classList.add('checked');
-    box.innerHTML = `<span>EMPTY</span><span>❌</span>`;
-    document.getElementById('classicalFeedback').innerHTML = `<span style="color:var(--red);">Drawer #${idx} is empty! Keep searching one by one...</span>`;
-  }
+function dialShift(delta) {
+  sfxDial();
+  shiftKey = (shiftKey + delta + 26) % 26;
+  document.getElementById('dialLabel').textContent = `SHIFT = ${shiftKey}`;
+  renderWheel();
+  updateVarIDE();
 }
 
-/* =========================================================================
-   ACT 2 LOGIC: THE 3D SPINNING COIN
-   ========================================================================= */
-function slapCoin() {
-  const coin = document.getElementById('theCoin');
-  if (!coin || !coin.classList.contains('spinning')) return;
-  coin.classList.remove('spinning');
+function renderWheel() {
+  const disp = document.getElementById('charDisplay');
+  if (!disp) return;
+  disp.innerHTML = '';
+  const cipher = plainWord.split('').map(c => {
+    const idx = ALPHA.indexOf(c);
+    return ALPHA[(idx + shiftKey) % 26];
+  }).join('');
 
-  const heads = Math.random() < 0.5;
-  coin.style.transform = heads ? 'rotateY(0deg)' : 'rotateY(180deg)';
-  sfxTumbler();
+  document.getElementById('cipherPreview').textContent = `ENCRYPTED: ${cipher}`;
 
-  document.getElementById('btnSlap').style.display = 'none';
-  document.getElementById('btnSpin').style.display = 'block';
-  document.getElementById('btnApplyQubits').style.display = 'block';
-
-  document.getElementById('coinExplanation').innerHTML = `
-    <b>COLLAPSED TO ${heads ? 'HEADS (0)' : 'TAILS (1)'}!</b> While it spun, it wasn't secretly one or the other—it was <b>both</b>. The instant your hand hit it, you performed a <b>Measurement</b>, forcing the quantum wave into reality.
-  `;
-  document.getElementById('taskPrompt').textContent = "CLICK 'APPLY SUPERPOSITION TO ALL 4 VAULT DRAWERS' BELOW";
+  cipher.split('').forEach(ch => {
+    const cell = document.createElement('div');
+    cell.className = 'char-cell highlight';
+    cell.textContent = ch;
+    disp.appendChild(cell);
+  });
 }
 
-function reSpin() {
-  sfxClick();
-  const coin = document.getElementById('theCoin');
-  coin.classList.add('spinning');
-  document.getElementById('btnSlap').style.display = 'block';
-  document.getElementById('btnSpin').style.display = 'none';
-  document.getElementById('btnApplyQubits').style.display = 'none';
-  document.getElementById('coinExplanation').textContent = "";
-  document.getElementById('taskPrompt').textContent = "SLAP YOUR HAND DOWN TO MEASURE AGAIN";
-}
-
-function applySuperposition() {
-  sfxPneumatic();
-  const stage = document.getElementById('vaultStage');
-  stage.innerHTML = `
-    <h3 style="font-family:var(--f-title); color:var(--cyan);">SUPERPOSITION APPLIED: ALL 4 DRAWERS SPINNING AT ONCE</h3>
-    <div class="safe-grid" style="grid-template-columns: repeat(2, 1fr);">
-      <div class="safe-drawer vibrating"><span>00</span><span>✨</span></div>
-      <div class="safe-drawer vibrating"><span>01</span><span>✨</span></div>
-      <div class="safe-drawer vibrating"><span>10</span><span>✨</span></div>
-      <div class="safe-drawer vibrating"><span>11</span><span>✨</span></div>
-    </div>
-    <div style="background:rgba(0, 240, 255, 0.1); border:1px solid var(--cyan); border-radius:8px; padding:14px; text-align:center;">
-      With a single command (<span class="c-qop">qc.h</span>), all 4 drawers are being tested <b>at the exact same instant</b>.
-    </div>
-    <button class="btn btn-gold" onclick="loadAct(3)" style="width:100%;">
-      PROCEED TO STEP 3: NOISE CANCELLATION →
-    </button>
-  `;
-  document.getElementById('btnStep2').classList.add('done');
-  document.getElementById('taskPrompt').textContent = "SUPERPOSITION COMPLETE. PROCEED TO STEP 3 TO AIM THE WAVE.";
-}
-
-/* =========================================================================
-   ACT 3 LOGIC: NOISE CANCELLATION (AUDIO / CANVAS)
-   ========================================================================= */
-function startScope() {
-  const cvs = document.getElementById('scopeCanvas');
-  if (!cvs) return;
-  const ctx = cvs.getContext('2d');
-
-  function render() {
-    cvs.width = cvs.clientWidth * window.devicePixelRatio;
-    cvs.height = cvs.clientHeight * window.devicePixelRatio;
-    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-    const w = cvs.clientWidth, h = cvs.clientHeight, mid = h / 2;
-
-    ctx.fillStyle = '#020409';
-    ctx.fillRect(0, 0, w, h);
-
-    // Baseline
-    ctx.strokeStyle = '#1e263d';
-    ctx.setLineDash([4, 4]);
-    ctx.beginPath(); ctx.moveTo(0, mid); ctx.lineTo(w, mid); ctx.stroke();
-    ctx.setLineDash([]);
-
-    scopePhase += 0.06;
-
-    // 4 Sine waves representing the 4 drawers
-    for (let i = 0; i < 4; i++) {
-      const isTarget = (i === 1);
-      ctx.beginPath();
-      ctx.lineWidth = isTarget ? 3.5 : 1.5;
-
-      let amp = 18;
-      if (!isFlipped && !isAmplified) {
-        amp = 18;
-        ctx.strokeStyle = isTarget ? '#ffb800' : '#00f0ff';
-      } else if (isFlipped && !isAmplified) {
-        amp = isTarget ? -24 : 18; // Inverted!
-        ctx.strokeStyle = isTarget ? '#ff2a55' : '#00f0ff';
-      } else if (isFlipped && isAmplified) {
-        amp = isTarget ? 50 : 2; // Constructive target, destructive others!
-        ctx.strokeStyle = isTarget ? '#00ffa3' : 'rgba(255,255,255,0.08)';
-      }
-
-      for (let x = 0; x < w; x += 4) {
-        const y = mid + Math.sin(x * 0.035 + scopePhase + i) * amp;
-        if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-      }
-      ctx.stroke();
-    }
-    scopeAnim = requestAnimationFrame(render);
-  }
-  render();
-}
-
-function triggerFlip() {
-  sfxTumbler();
-  isFlipped = true;
-  document.getElementById('btnFlip').disabled = true;
-  document.getElementById('btnCancel').disabled = false;
-  document.getElementById('scopeResonance').innerHTML = "<b style='color:var(--red);'>Target Wave Inverted Upside Down</b>";
-  document.getElementById('taskPrompt').textContent = "TARGET INVERTED! NOW CLICK '2. CANCEL WRONG WAVES' TO SILENCE THE REST.";
-}
-
-function triggerCancel() {
-  sfxPneumatic();
-  isAmplified = true;
-  document.getElementById('btnCancel').disabled = true;
-  document.getElementById('btnPopDoor').style.display = 'block';
-  document.getElementById('scopeResonance').innerHTML = "<b style='color:var(--emerald);'>Target Resonance: 100% Guaranteed</b>";
-  document.getElementById('taskPrompt').textContent = "WRONG WAVES SILENCED! CLICK 'POP DOOR TWO' TO CRACK IT.";
-}
-
-function popDoorTwo() {
-  sfxPneumatic();
-  document.getElementById('btnStep3').classList.add('done');
-  loadAct(4);
-}
-
-/* =========================================================================
-   ACT 4 LOGIC: THE GROVER FOR-LOOP (16 DRAWERS)
-   ========================================================================= */
-function renderGrid16() {
-  const g = document.getElementById('grid16');
-  if (!g) return;
-  g.innerHTML = '';
-  for (let i = 0; i < 16; i++) {
-    const d = document.createElement('div');
-    d.className = 'safe-drawer vibrating';
-    d.id = `safe16-${i}`;
-    d.style.fontSize = '0.72rem';
-    d.innerHTML = `<span>${i.toString(2).padStart(4,'0')}</span><span>✨</span>`;
-    g.appendChild(d);
-  }
-}
-
-function dial(delta) {
-  sfxClick();
-  loopCount = Math.max(1, Math.min(6, loopCount + delta));
-  document.getElementById('dispLoop').textContent = loopCount;
-
-  // Exact Grover formula: sin^2((2k + 1) * theta) where theta = asin(1/sqrt(16))
-  const theta = Math.asin(1 / Math.sqrt(16));
-  const prob = Math.pow(Math.sin((2 * loopCount + 1) * theta), 2);
-  const conf = Math.round(prob * 100);
-
-  const disp = document.getElementById('dispConf');
-  disp.textContent = `CONFIDENCE: ${conf}%`;
-  disp.style.color = (conf >= 90) ? 'var(--emerald)' : (conf >= 50 ? 'var(--gold)' : 'var(--red)');
-
-  updateLoopIDE();
-
-  if (loopCount === 3) {
-    document.getElementById('taskPrompt').textContent = "🎯 SWEET SPOT! 3 LOOPS = 96% CONFIDENCE. HIT 'EXECUTE GROVER'S LOOP'!";
-  } else if (loopCount > 3) {
-    document.getElementById('taskPrompt').textContent = "⚠️ OVERSHOT! Too many loops causes the sound waves to cancel themselves!";
-  } else {
-    document.getElementById('taskPrompt').textContent = "DIAL TO 3 LOOPS FOR OPTIMAL CONSTRUCTIVE RESONANCE.";
-  }
-}
-
-function updateLoopIDE() {
+function updateVarIDE() {
   renderIDE([
-    { t: "# VARIABLE: Register of 4 Qubits (16 safe drawers)", c: "c-cmt" },
-    { t: "n_qubits = 4", c: "c-num" },
-    { t: "qc = QuantumCircuit(n_qubits)", c: "c-fn" },
-    { t: "qc.h(range(n_qubits))  # Superposition over all 16 drawers", c: "c-qop" },
+    { t: "# PROGRAMMING CONSTRUCT // THE VARIABLE", c: "c-cmt" },
+    { t: "# A variable is a named box holding a changeable value", c: "c-cmt" },
+    { t: "message = 'CODE'", c: "c-kw" },
+    { t: `shift_key = ${shiftKey}  # <-- Your variable dial changes this!`, c: "c-num", active: true },
     { t: "", c: "" },
-    { t: "# PROGRAMMING CONSTRUCT: COUNTED FOR-LOOP", c: "c-cmt" },
-    { t: `# Repeating ${loopCount} wave cancellation pass(es)`, c: "c-cmt" },
-    { t: `for step in range(${loopCount}):`, c: "c-kw", active: true },
-    { t: "    qc.append(oracle, range(n_qubits))    # Invert target sound wave", c: "c-fn" },
-    { t: "    qc.append(diffuser, range(n_qubits))  # Cancel wrong sound waves", c: "c-fn" },
-    { t: "", c: "" },
-    { t: "qc.measure_all()  # Extracts the combination in 1 single shot!", c: "c-qop" }
+    { t: "# Function: Applies rule to data", c: "c-cmt" },
+    { t: "encrypted = shift_letters(message, shift_key)", c: "c-fn" },
+    { t: "print(encrypted)", c: "c-qop" }
   ]);
 }
 
-function extractDiamond() {
-  sfxPneumatic();
-  const keyBox = document.getElementById(`safe16-${targetBox16}`);
-  if (keyBox) {
-    keyBox.className = "safe-drawer cracked";
-    keyBox.innerHTML = `<span>JEWEL</span><span>💎</span>`;
-  }
-  document.getElementById('btnStep4').classList.add('done');
-  setTimeout(() => openPlenary(), 1000);
+function lockVariable() {
+  sfxSuccess();
+  document.getElementById('btnStep1').classList.add('done');
+  loadStage(2);
 }
 
 /* =========================================================================
-   LIVE IDE AUTO-RENDERER
+   STAGE 2 LOGIC: THE UNTIL LOOP
+   ========================================================================= */
+function runUntilLoop() {
+  if (untilRunning) return;
+  untilRunning = true;
+  document.getElementById('btnRunUntil').disabled = true;
+  const consoleEl = document.getElementById('crackConsole');
+  consoleEl.innerHTML = '> Initializing while-loop...\n';
+
+  let testKey = 1;
+  const targetKey = 7; // JVKL shifted back by 7 = CODE
+
+  function step() {
+    const attempt = 'JVKL'.split('').map(c => {
+      const idx = ALPHA.indexOf(c);
+      return ALPHA[(idx - testKey + 26) % 26];
+    }).join('');
+
+    // Update letters visual
+    attempt.split('').forEach((ch, i) => {
+      const cell = document.getElementById(`u-${i}`);
+      if (cell) cell.textContent = ch;
+    });
+
+    if (testKey === targetKey) {
+      sfxSuccess();
+      consoleEl.innerHTML += `<span class="hit">> KEY ${testKey}: "${attempt}" matches English lexicon! CRACKED!</span>\n`;
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+      document.getElementById('untilStatus').textContent = 'BROKEN // CODE';
+      document.getElementById('btnStep2').classList.add('done');
+      document.getElementById('taskPrompt').textContent = "CIPHER BROKEN VIA UNTIL LOOP! CLICK STAGE 3 TO TEST SCALE.";
+      setTimeout(() => loadStage(3), 2000);
+      return;
+    } else {
+      sfxDial();
+      consoleEl.innerHTML += `<span class="miss">> KEY ${testKey}: "${attempt}" [Rejected]</span>\n`;
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+      testKey++;
+      setTimeout(step, 180);
+    }
+  }
+  step();
+}
+
+/* =========================================================================
+   STAGE 3 LOGIC: KEY EXPLODER
+   ========================================================================= */
+function adjustKeyLen(delta) {
+  sfxClick();
+  keyLen = Math.max(4, Math.min(16, keyLen + delta));
+  document.getElementById('dispKeyLen').textContent = keyLen;
+  updateKeyMetrics();
+}
+
+function updateKeyMetrics() {
+  const combos = Math.pow(26, keyLen);
+  const dispCombos = document.getElementById('dispCombos');
+  const dispTime = document.getElementById('dispCrackTime');
+
+  if (keyLen <= 6) {
+    dispCombos.textContent = (combos / 1e6).toFixed(1) + " Million";
+    dispTime.textContent = "< 1 Second";
+  } else if (keyLen === 8) {
+    dispCombos.textContent = "208 Billion";
+    dispTime.textContent = "2.4 Days";
+  } else if (keyLen === 10) {
+    dispCombos.textContent = "141 Trillion";
+    dispTime.textContent = "4.5 Years";
+  } else if (keyLen === 12) {
+    dispCombos.textContent = "95 Quadrillion";
+    dispTime.textContent = "3,000 Years";
+  } else {
+    dispCombos.textContent = "43 Sextillion";
+    dispTime.textContent = "840,000 Years";
+  }
+
+  renderIDE([
+    { t: "# KEY SPACE EXPONENTIAL SCALING", c: "c-cmt" },
+    { t: `key_length = ${keyLen}  # Length of bank master passkey`, c: "c-num", active: true },
+    { t: `possible_combinations = 26 ** key_length`, c: "c-kw" },
+    { t: `# Classical Search: Must test half of all keys`, c: "c-cmt" },
+    { t: `classical_steps = possible_combinations // 2`, c: "c-fn" }
+  ]);
+}
+
+/* =========================================================================
+   STAGE 4 LOGIC: QUANTUM GROVER ANNIHILATOR
+   ========================================================================= */
+function renderQKeys() {
+  const wrap = document.getElementById('qKeys');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  for (let i = 0; i < 16; i++) {
+    const box = document.createElement('div');
+    box.className = 'char-cell';
+    box.style.width = '100%';
+    box.style.height = '48px';
+    box.style.fontSize = '0.85rem';
+    box.id = `qkey-${i}`;
+    box.textContent = i.toString(2).padStart(4, '0');
+    wrap.appendChild(box);
+  }
+}
+
+function fireQuantumAnnihilator() {
+  sfxSuccess();
+  document.getElementById('btnQuantumFire').disabled = true;
+
+  // Animate all keys vibrating in superposition, then collapse
+  for (let i = 0; i < 16; i++) {
+    const k = document.getElementById(`qkey-${i}`);
+    if (k) {
+      k.style.borderColor = 'var(--cyan)';
+      k.style.boxShadow = '0 0 16px var(--cyan-glow)';
+      k.textContent = '✨';
+    }
+  }
+
+  setTimeout(() => {
+    // Target 11 is the cracked master passkey
+    const target = document.getElementById('qkey-11');
+    if (target) {
+      target.style.borderColor = 'var(--emerald)';
+      target.style.background = 'rgba(0, 255, 163, 0.3)';
+      target.style.boxShadow = '0 0 30px var(--emerald-glow)';
+      target.textContent = 'KEY!';
+    }
+    document.getElementById('btnStep4').classList.add('done');
+    setTimeout(() => openPlenary(), 1000);
+  }, 900);
+}
+
+/* =========================================================================
+   LIVE IDE RENDERING
    ========================================================================= */
 function renderIDE(lines) {
   const term = document.getElementById('ideTerminal');
@@ -972,42 +874,43 @@ function escapeHtml(s) {
 }
 
 /* =========================================================================
-   PLENARY MODAL & DOSSIER EXPORT
+   PLENARY & CREDENTIALS MODAL
    ========================================================================= */
 function openPlenary() {
+  sfxSuccess();
   document.getElementById('plenaryModal').style.display = 'flex';
 }
 function closePlenary() {
   document.getElementById('plenaryModal').style.display = 'none';
 }
 function copyClearance() {
-  const dossier = 
-`====================================================================
-CLEARANCE DOSSIER // TOP SECRET // OPERATION QUANTUM SAFECRACKER
-====================================================================
-Cadet: Verified Operative
-Training Window: 30-Minute Infiltration
-Algorithm Authored: Grover's Amplitude Amplification
+  const text = 
+`=============================================================
+CLASSIFIED OPERATIVE DOSSIER // OPERATION CIPHER BREACH
+=============================================================
+Clearance: Quantum Cryptanalysis Specialist
+Training Track: Adult Starter Lab (30-min Immersion)
 
-CORE COMPUTER SCIENCE CONSTRUCTS MASTERED:
-1. State Registers (qc.h): Superposition of 16 states at once.
-2. Destructive Interference (Phase Inversion): Noise-cancelling non-targets.
-3. Counted Loops (for step in range): Balanced resonance to 96%.
+CORE COMPUTING SKILLS DEMONSTRATED:
+1. Variables: Dynamic memory mutation of shift_key parameters.
+2. The Until Loop: Autonomous state-based termination (while not cracked).
+3. Exponential Scaling: Mapped 26^N classical brute-force limits.
+4. Quantum Speedup: Grover's O(√N) cryptographic key collapse.
 
-THE SCALE PERSPECTIVE:
-- Classical Supercomputer (1,000,000 combinations): ~500,000 checks (6 Days)
-- Your Quantum Code (1,000,000 combinations): 1,000 operations (0.04 Seconds)
+THE REAL-WORLD STAKES:
+- 128-bit Bank Encryption vs Normal Supercomputers: 100 Billion Years.
+- 128-bit Bank Encryption vs Quantum Circuit: Reduced to 64-bit space (Cracked in Minutes).
 
 STATUS: VERIFIED.
 You are among the estimated <0.005% of humans who have authored and compiled a functioning quantum search algorithm.`;
 
-  navigator.clipboard.writeText(dossier).then(() => {
-    alert("Dossier copied to clipboard! Share it with pride.");
+  navigator.clipboard.writeText(text).then(() => {
+    alert("Mission credentials copied to clipboard! Share your clearance.");
   });
 }
 
-// Start in Act 1
-loadAct(1);
+// Boot into Stage 1
+loadStage(1);
 </script>
 </body>
 </html>
