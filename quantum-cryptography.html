@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TRACK C // The Wiretap & The Quantum Key</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700;900&family=Fira+Code:wght@400;600;700&family=Outfit:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-base: #070913;
+    --bg-panel: #0d1224;
+    --bg-card: #141c38;
+    --border: #1f2b4d;
+    --border-glow: #384e85;
+    --cyan: #00f0ff;
+    --cyan-glow: rgba(0, 240, 255, 0.35);
+    --gold: #ffb800;
+    --gold-glow: rgba(255, 184, 0, 0.4);
+    --emerald: #00ffa3;
+    --red: #ff2a55;
+    --text-main: #f0f4ff;
+    --text-dim: #7d8ea7;
+    --f-title: 'Chakra Petch', sans-serif;
+    --f-main: 'Outfit', sans-serif;
+    --f-mono: 'Fira Code', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg-base);
+    color: var(--text-main);
+    font-family: var(--f-main);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    user-select: none;
+    background-image:
+      radial-gradient(circle at 10% 15%, rgba(0, 240, 255, 0.08) 0%, transparent 45%),
+      radial-gradient(circle at 90% 85%, rgba(255, 184, 0, 0.06) 0%, transparent 45%),
+      linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
+  }
+  header {
+    background: var(--bg-panel);
+    border-bottom: 2px solid var(--border);
+    padding: 12px 26px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .brand { font-family: var(--f-title); font-size: 1.15rem; font-weight: 700; }
+  .brand span { color: var(--cyan); }
+  .nav-strip { display: flex; gap: 8px; }
+  .nav-btn {
+    background: transparent; border: 1px solid var(--border);
+    color: var(--text-dim); font-family: var(--f-title);
+    font-size: 0.84rem; padding: 6px 14px; border-radius: 20px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .nav-btn.active {
+    background: var(--cyan); color: #070913;
+    border-color: var(--cyan); box-shadow: 0 0 12px var(--cyan-glow);
+  }
+  .nav-btn.done { color: var(--emerald); border-color: rgba(0, 255, 163, 0.4); }
+
+  .workspace {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    height: calc(100vh - 60px);
+  }
+  @media (max-width: 1050px) { .workspace { grid-template-columns: 1fr; height: auto; } }
+
+  .ops-chamber {
+    padding: 24px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .transmission {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--gold);
+    border-radius: 10px;
+    padding: 16px 20px;
+  }
+  .transmission h3 { font-family: var(--f-title); font-size: 0.85rem; color: var(--gold); letter-spacing: 0.08em; }
+  .transmission p { font-size: 1.02rem; line-height: 1.55; margin-top: 4px; }
+  .transmission code { background: #070913; color: var(--cyan); padding: 2px 6px; border-radius: 4px; font-family: var(--f-mono); }
+
+  .interactive-deck {
+    background: radial-gradient(circle at 50% 50%, #151d38 0%, #0c1122 100%);
+    border: 2px solid var(--border-glow);
+    border-radius: 14px;
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+  }
+
+  /* ROTARY WHEEL */
+  .rotary-wheel {
+    display: flex;
+    gap: 8px;
+    font-family: var(--f-mono);
+    font-size: 2.2rem;
+    font-weight: 800;
+  }
+  .char-cell {
+    width: 55px; height: 70px;
+    background: #080d1a;
+    border: 2px solid var(--border-glow);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: inset 0 0 12px rgba(0,0,0,0.8);
+    transition: all 0.2s;
+  }
+  .char-cell.highlight { border-color: var(--cyan); color: var(--cyan); box-shadow: 0 0 15px var(--cyan-glow); }
+
+  .dial-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-card);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 20px;
+    width: 100%;
+    max-width: 440px;
+  }
+  .dial-btn {
+    width: 40px; height: 40px;
+    border-radius: 8px;
+    border: 1px solid var(--border-glow);
+    background: #0d1222;
+    color: #fff;
+    font-size: 1.4rem; font-weight: 700;
+    cursor: pointer;
+  }
+  .dial-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+  .dial-val { font-family: var(--f-mono); font-size: 1.3rem; font-weight: 800; color: var(--gold); }
+
+  .action-btn {
+    background: linear-gradient(135deg, var(--cyan), #0088ff);
+    border: none;
+    color: #030814;
+    font-family: var(--f-title);
+    font-weight: 900;
+    font-size: 1.05rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 15px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 0 20px var(--cyan-glow);
+    transition: all 0.2s;
+    width: 100%;
+    max-width: 440px;
+  }
+  .action-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 0 30px var(--cyan-glow); }
+  .action-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  /* RIGHT CYBER TERMINAL */
+  .terminal-pane {
+    background: #040710;
+    border-left: 2px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    font-family: var(--f-mono);
+  }
+  .term-header {
+    background: #080d1a;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    display: flex;
+    justify-content: space-between;
+  }
+  .terminal-history {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .term-row { white-space: pre-wrap; word-break: break-word; }
+  .term-cmd { color: #fff; }
+  .term-cmd::before { content: "crypt@interceptor:~$ "; color: var(--gold); }
+  .term-ok { color: var(--emerald); }
+  .term-bad { color: var(--red); }
+  .term-sys { color: var(--text-dim); font-style: italic; }
+
+  .term-input-bar {
+    background: #080d1a;
+    border-top: 1px solid var(--border);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .term-prompt { color: var(--gold); font-weight: 700; }
+  .term-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--cyan);
+    font-family: var(--f-mono);
+    font-size: 0.95rem;
+  }
+  .chip-strip {
+    padding: 6px 16px;
+    background: #060914;
+    border-top: 1px solid #10182f;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+  }
+  .term-chip {
+    background: #0c1224;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.74rem;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .term-chip:hover { border-color: var(--cyan); color: var(--cyan); }
+
+  /* SCALE RACE CARDS */
+  .scale-box {
+    width: 100%;
+    background: #060914;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">TRACK C // <span>QUANTUM CRYPTOGRAPHY</span></div>
+  <nav class="nav-strip">
+    <button class="nav-btn active" id="nb1" onclick="loadPhase(1)">1. The Caesar Variable</button>
+    <button class="nav-btn" id="nb2" onclick="loadPhase(2)">2. The Until Loop</button>
+    <button class="nav-btn" id="nb3" onclick="loadPhase(3)">3. Key Space Explosion</button>
+    <button class="nav-btn" id="nb4" onclick="loadPhase(4)">4. Shor's Period Finding</button>
+  </nav>
+  <a href="index.html" style="color:var(--text-dim); text-decoration:none; font-family:var(--f-mono); font-size:0.8rem;">← Portal</a>
+</header>
+
+<div class="workspace">
+  <!-- LEFT: EXPERIMENTAL OPS DECK -->
+  <main class="ops-chamber">
+    <div class="transmission">
+      <h3 id="txTitle">PHASE 1 // THE CAESAR VARIABLE</h3>
+      <p id="txBody">A cipher is a rule applied to information. A <b>Variable</b> is a labelled slot in computer memory that holds a value. Turn the dial to set <code>shift_key</code> and observe the live ciphertext transformation.</p>
+    </div>
+
+    <div class="interactive-deck" id="deck">
+      <!-- Injected per phase -->
+    </div>
+  </main>
+
+  <!-- RIGHT: LIVE EXECUTABLE INTERCEPT TERMINAL -->
+  <aside class="terminal-pane">
+    <div class="term-header">
+      <span>INTERCEPT CONSOLE [PYTHON 3.12 / SHOR KERNEL]</span>
+      <span style="color:var(--emerald);">● CARRIER ACTIVE</span>
+    </div>
+    <div class="terminal-history" id="termLog">
+      <div class="term-row term-sys">Crypto-Analysis Terminal initialized.</div>
+      <div class="term-row term-sys">Commands entered below execute against the active cipher registers.</div>
+    </div>
+    <div class="chip-strip" id="chipStrip"></div>
+    <div class="term-input-bar">
+      <span class="term-prompt">&gt;</span>
+      <input type="text" class="term-input" id="tIn" spellcheck="false" autocomplete="off" placeholder="Type instruction...">
+    </div>
+  </aside>
+</div>
+
+<script>
+  let phase = 1;
+  const ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  let plain = 'LOCK';
+  let shift = 3;
+  let keyLength = 6;
+  let targetUntilKey = 8; // For phase 2 wiretap
+
+  function log(txt, cls="term-row") {
+    const box = document.getElementById('termLog');
+    const d = document.createElement('div');
+    d.className = "term-row " + cls;
+    d.textContent = txt;
+    box.appendChild(d);
+    box.scrollTop = box.scrollHeight;
+  }
+
+  function setChips(arr) {
+    const cs = document.getElementById('chipStrip');
+    cs.innerHTML = '';
+    arr.forEach(c => {
+      const s = document.createElement('span');
+      s.className = 'term-chip';
+      s.textContent = c;
+      s.onclick = () => {
+        document.getElementById('tIn').value = c;
+        document.getElementById('tIn').focus();
+      };
+      cs.appendChild(s);
+    });
+  }
+
+  const input = document.getElementById('tIn');
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      const v = input.value.trim();
+      input.value = '';
+      if (!v) return;
+      exec(v);
+    }
+  });
+
+  function loadPhase(p) {
+    phase = p;
+    document.querySelectorAll('.nav-btn').forEach((b, i) => b.classList.toggle('active', i+1 === p));
+    const deck = document.getElementById('deck');
+    const title = document.getElementById('txTitle');
+    const body = document.getElementById('txBody');
+
+    if (p === 1) {
+      title.textContent = "PHASE 1 // THE CAESAR VARIABLE";
+      body.innerHTML = "Turn the dial or enter <code>shift_key = 5</code> in the terminal to alter the memory variable.";
+      deck.innerHTML = `
+        <div style="display:flex; justify-content:space-between; width:100%; font-family:var(--f-mono); font-size:0.86rem;">
+          <span>PLAINTEXT: <b>LOCK</b></span>
+          <span style="color:var(--cyan);" id="cipherOut">CIPHERTEXT: ORFN</span>
+        </div>
+        <div class="rotary-wheel" id="wheelDisp"></div>
+        <div class="dial-controls">
+          <button class="dial-btn" onclick="dial(-1)">−</button>
+          <div class="dial-val" id="dialVal">SHIFT = 3</div>
+          <button class="dial-btn" onclick="dial(1)">+</button>
+        </div>
+        <button class="action-btn" onclick="advanceToPhase2()">CONFIRM VARIABLE & ADVANCE →</button>
+      `;
+      renderWheel();
+      setChips(['shift_key = 5', 'shift_key = 12', 'clear']);
+      log("Variable register: shift_key = 3 loaded.", "term-sys");
+    }
+    else if (p === 2) {
+      title.textContent = "PHASE 2 // THE WHILE/UNTIL LOOP";
+      body.innerHTML = "We intercepted ciphertext <code>'TWKS'</code>. We don't know the shift. Type the automation loop: <code>while not match(): key += 1</code>";
+      deck.innerHTML = `
+        <div style="display:flex; justify-content:space-between; width:100%; font-family:var(--f-mono); font-size:0.86rem;">
+          <span>INTERCEPTED: <b style="color:var(--cyan);">TWKS</b></span>
+          <span id="loopStatus" style="color:var(--gold);">STATUS: IDLE</span>
+        </div>
+        <div class="rotary-wheel">
+          <div class="char-cell highlight" id="c0">T</div>
+          <div class="char-cell highlight" id="c1">W</div>
+          <div class="char-cell highlight" id="c2">K</div>
+          <div class="char-cell highlight" id="c3">S</div>
+        </div>
+        <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:12px; width:100%; font-family:var(--f-mono); font-size:0.82rem; color:var(--text-dim);" id="loopEcho">
+          > Loop not running. Awaiting input in terminal.
+        </div>
+      `;
+      setChips(['while not match(): key += 1', 'help']);
+      log("Intercepted ciphertext 'TWKS' ready for loop decryption.", "term-sys");
+    }
+    else if (p === 3) {
+      title.textContent = "PHASE 3 // THE EXPONENTIAL WALL";
+      body.innerHTML = "Modern RSA and AES encryption don't use 26 letters. They use 128 or 256 bits. Watch how fast classical brute force becomes impossible.";
+      deck.innerHTML = `
+        <div class="dial-controls" style="max-width:100%;">
+          <span>KEY LENGTH (BITS)</span>
+          <div style="display:flex; align-items:center; gap:12px;">
+            <button class="dial-btn" onclick="adjustBits(-16)">−</button>
+            <div class="dial-val" id="dispBits">32 Bits</div>
+            <button class="dial-btn" onclick="adjustBits(16)">+</button>
+          </div>
+        </div>
+        <div class="scale-box">
+          <div style="display:flex; justify-content:space-between; font-family:var(--f-mono); font-size:0.82rem;">
+            <span>TOTAL COMBINATIONS:</span>
+            <span id="dispCombos" style="color:var(--gold);">4.29 Billion</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-family:var(--f-mono); font-size:0.82rem;">
+            <span>CLASSICAL SEARCH (1 Trillion/sec):</span>
+            <span id="dispTime" style="color:var(--red);">0.004 Seconds</span>
+          </div>
+        </div>
+        <button class="action-btn" onclick="loadPhase(4)">ENTER QUANTUM CRYPTANALYSIS →</button>
+      `;
+      setChips(['bits = 64', 'bits = 128', 'clear']);
+      log("Cryptographic scale simulator online.", "term-sys");
+    }
+    else if (p === 4) {
+      title.textContent = "PHASE 4 // SHOR'S QUANTUM BREAKTHROUGH";
+      body.innerHTML = "Peter Shor proved in 1994 that quantum computers don't guess keys sequentially: they find the mathematical <b>period (wave cycle)</b> of the key using interference in polynomial time. Type <code>shor.find_period()</code>";
+      deck.innerHTML = `
+        <div style="width:100%; background:#050711; border:1px solid var(--border); border-radius:10px; padding:16px; display:flex; flex-direction:column; gap:12px;">
+          <div style="display:flex; justify-content:space-between; font-family:var(--f-mono); font-size:0.8rem;">
+            <span>RSA FACTORIZATION MODULUS: N = 3233 (p × q)</span>
+            <span style="color:var(--cyan);">PERIOD WAVE MONITOR</span>
+          </div>
+          <div style="height:100px; width:100%; display:flex; align-items:flex-end; gap:4px; padding-bottom:6px;" id="waveBars"></div>
+        </div>
+        <button class="action-btn" id="btnShor" onclick="exec('shor.find_period()')">⚡ EXECUTE QUANTUM PERIOD COLLAPSE</button>
+      `;
+      renderPeriodBars(false);
+      setChips(['shor.find_period()', 'help']);
+      log("Shor period-finding operator ready on quantum register.", "term-sys");
+    }
+  }
+
+  /* PHASE 1 LOGIC */
+  function renderWheel() {
+    const d = document.getElementById('wheelDisp');
+    if (!d) return;
+    d.innerHTML = '';
+    const cipher = plain.split('').map(c => ALPHA[(ALPHA.indexOf(c) + shift) % 26]).join('');
+    document.getElementById('cipherOut').textContent = "CIPHERTEXT: " + cipher;
+    cipher.split('').forEach(ch => {
+      const el = document.createElement('div');
+      el.className = 'char-cell highlight';
+      el.textContent = ch;
+      d.appendChild(el);
+    });
+  }
+  function dial(delta) {
+    shift = (shift + delta + 26) % 26;
+    document.getElementById('dialVal').textContent = `SHIFT = ${shift}`;
+    renderWheel();
+    log(`shift_key updated to ${shift}`, "term-sys");
+  }
+  function advanceToPhase2() {
+    document.getElementById('nb1').classList.add('done');
+    loadPhase(2);
+  }
+
+  /* PHASE 2 LOGIC */
+  function runUntilLoop() {
+    const status = document.getElementById('loopStatus');
+    const echo = document.getElementById('loopEcho');
+    status.textContent = "RUNNING...";
+    status.style.color = "var(--cyan)";
+
+    let k = 1;
+    function step() {
+      const attempt = 'TWKS'.split('').map(c => ALPHA[(ALPHA.indexOf(c) - k + 26) % 26]).join('');
+      document.getElementById('c0').textContent = attempt[0];
+      document.getElementById('c1').textContent = attempt[1];
+      document.getElementById('c2').textContent = attempt[2];
+      document.getElementById('c3').textContent = attempt[3];
+
+      echo.textContent = `> key = ${k} => "${attempt}" [REJECTED]`;
+      log(`Testing key ${k}: "${attempt}"`, "term-sys");
+
+      if (attempt === "LOCK") {
+        status.textContent = "CRACKED! KEY = " + k;
+        status.style.color = "var(--emerald)";
+        echo.innerHTML = `<b style="color:var(--emerald);">> MATCH FOUND! Decoded: "LOCK" at key = ${k}</b>`;
+        log(`Until-loop halted. Condition match() satisfied at key ${k}.`, "term-ok");
+        document.getElementById('nb2').classList.add('done');
+        setTimeout(() => loadPhase(3), 2000);
+      } else {
+        k++;
+        if (k < 26) setTimeout(step, 140);
+      }
+    }
+    step();
+  }
+
+  /* PHASE 3 LOGIC */
+  let bits = 32;
+  function adjustBits(delta) {
+    bits = Math.max(16, Math.min(128, bits + delta));
+    updateBitDisplay();
+  }
+  function updateBitDisplay() {
+    document.getElementById('dispBits').textContent = bits + " Bits";
+    const combos = Math.pow(2, bits);
+    const sec = (combos / 2) / 1e12; // 1 trillion tests/sec
+
+    let timeStr = "";
+    if (sec < 60) timeStr = sec.toFixed(3) + " Seconds";
+    else if (sec < 86400) timeStr = (sec / 3600).toFixed(1) + " Hours";
+    else if (sec < 31536000) timeStr = (sec / 86400).toFixed(1) + " Days";
+    else if (sec < 31536000 * 1000) timeStr = (sec / 31536000).toFixed(0) + " Years";
+    else timeStr = (sec / 31536000).toExponential(2) + " Years (Beyond Heat Death of Universe)";
+
+    document.getElementById('dispCombos').textContent = combos > 1e15 ? combos.toExponential(2) : combos.toLocaleString();
+    document.getElementById('dispTime').textContent = timeStr;
+    log(`Register bits = ${bits}. Classical search space updated.`, "term-sys");
+  }
+
+  /* PHASE 4 LOGIC */
+  function renderPeriodBars(collapsed) {
+    const wrap = document.getElementById('waveBars');
+    if (!wrap) return;
+    wrap.innerHTML = '';
+    for (let i = 0; i < 32; i++) {
+      const b = document.createElement('div');
+      b.style.flex = '1';
+      b.style.borderRadius = '2px 2px 0 0';
+      if (!collapsed) {
+        const h = 20 + Math.sin(i * 0.8) * 15 + Math.cos(i * 0.4) * 10;
+        b.style.height = h + 'px';
+        b.style.background = 'var(--cyan)';
+      } else {
+        // Constructive peak at period multiples
+        const isPeak = (i % 8 === 0);
+        b.style.height = isPeak ? '90px' : '4px';
+        b.style.background = isPeak ? 'var(--emerald)' : 'rgba(255,255,255,0.08)';
+      }
+      wrap.appendChild(b);
+    }
+  }
+
+  /* INTERPRETER EXEC ENGINE */
+  function exec(cmd) {
+    log(cmd, "term-cmd");
+
+    if (cmd === "clear") {
+      document.getElementById('termLog').innerHTML = '';
+      return;
+    }
+    if (cmd === "help") {
+      log("Available instructions are shown on the action chips above the command line.", "term-sys");
+      return;
+    }
+
+    if (phase === 1) {
+      if (cmd.startsWith("shift_key =")) {
+        const val = parseInt(cmd.split("=")[1].trim(), 10);
+        if (!isNaN(val)) {
+          shift = (val % 26 + 26) % 26;
+          document.getElementById('dialVal').textContent = `SHIFT = ${shift}`;
+          renderWheel();
+          log(`Variable shift_key reassigned to ${shift}. Cipher updated.`, "term-ok");
+        }
+      } else {
+        log("SyntaxError: Expected variable assignment (e.g. shift_key = 5)", "term-bad");
+      }
+    } else if (phase === 2) {
+      if (cmd.includes("while not match()") && cmd.includes("key +=")) {
+        log("Compiling autonomous until-loop...", "term-ok");
+        runUntilLoop();
+      } else {
+        log("SyntaxError: Expected 'while not match(): key += 1'", "term-bad");
+      }
+    } else if (phase === 3) {
+      if (cmd.startsWith("bits =")) {
+        const b = parseInt(cmd.split("=")[1].trim(), 10);
+        if (!isNaN(b)) {
+          bits = Math.max(16, Math.min(128, b));
+          updateBitDisplay();
+        }
+      } else {
+        log("SyntaxError: Expected bits = <number>", "term-bad");
+      }
+    } else if (phase === 4) {
+      if (cmd === "shor.find_period()") {
+        log("Applying Quantum Fourier Transform (QFT) to measure period r...", "term-ok");
+        setTimeout(() => {
+          renderPeriodBars(true);
+          log("Constructive interference locked! Period r = 8 discovered instantly.", "term-ok");
+          log("Prime factors p = 61, q = 53 extracted. RSA modulus shattered.", "term-ok");
+          document.getElementById('nb4').classList.add('done');
+          setTimeout(() => {
+            alert("CRYPTO-ANALYSIS MISSION COMPLETE!\n\nYou have deployed both algorithmic control flow (variables, loops) and Shor's quantum period-finding attack.\n\nPublic key encryption broken in minutes instead of eons.");
+          }, 600);
+        }, 800);
+      } else {
+        log("SyntaxError: Expected shor.find_period()", "term-bad");
+      }
+    }
+  }
+
+  loadPhase(1);
+</script>
+</body>
+</html>
