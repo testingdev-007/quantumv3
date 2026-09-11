@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TRACK A // Guided Interactive Terminal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700;900&family=Fira+Code:wght@400;600;700&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-base: #060912;
+    --bg-panel: #0d1222;
+    --border: #1e2947;
+    --border-glow: #384d80;
+    --cyan: #00f0ff;
+    --cyan-glow: rgba(0, 240, 255, 0.35);
+    --gold: #ffb800;
+    --emerald: #00ffa3;
+    --red: #ff3366;
+    --text-main: #f0f4ff;
+    --text-dim: #798bb2;
+    --f-title: 'Chakra Petch', sans-serif;
+    --f-main: 'Outfit', sans-serif;
+    --f-mono: 'Fira Code', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg-base);
+    color: var(--text-main);
+    font-family: var(--f-main);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: var(--bg-panel);
+    border-bottom: 2px solid var(--border);
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .brand { font-family: var(--f-title); font-size: 1.1rem; font-weight: 700; }
+  .brand span { color: var(--cyan); }
+  .hub-link { color: var(--text-dim); text-decoration: none; font-family: var(--f-mono); font-size: 0.8rem; }
+  .hub-link:hover { color: var(--cyan); }
+
+  .workspace {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    height: calc(100vh - 58px);
+  }
+  @media (max-width: 1000px) { .workspace { grid-template-columns: 1fr; height: auto; } }
+
+  .left-pane {
+    padding: 24px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .mission-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--gold);
+    border-radius: 12px;
+    padding: 18px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .mission-card h3 { font-family: var(--f-title); color: var(--gold); font-size: 0.9rem; letter-spacing: 0.08em; }
+  .mission-card p { font-size: 1.05rem; line-height: 1.55; }
+  .mission-card code { background: #060912; color: var(--cyan); padding: 2px 6px; border-radius: 4px; font-family: var(--f-mono); }
+
+  .state-monitor {
+    background: #050811;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .state-header { display: flex; justify-content: space-between; font-family: var(--f-mono); font-size: 0.8rem; color: var(--text-dim); }
+  
+  .amp-canvas-wrap { height: 140px; width: 100%; position: relative; }
+  canvas { width: 100%; height: 100%; border-radius: 6px; }
+
+  .stats-strip {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .stat-pill {
+    background: #090e1c;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+  }
+  .stat-pill .num { font-family: var(--f-mono); font-size: 1.25rem; font-weight: 700; color: var(--cyan); }
+  .stat-pill .lbl { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; margin-top: 4px; }
+
+  /* TERMINAL PANE */
+  .terminal-pane {
+    background: #03050a;
+    border-left: 2px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    font-family: var(--f-mono);
+  }
+  .terminal-bar {
+    background: #080c16;
+    border-bottom: 1px solid var(--border);
+    padding: 10px 16px;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    display: flex;
+    justify-content: space-between;
+  }
+  .history {
+    flex: 1;
+    padding: 18px;
+    overflow-y: auto;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .log-line { white-space: pre-wrap; word-break: break-word; }
+  .log-cmd { color: #fff; }
+  .log-cmd::before { content: "cadet@quantum-qpu:~$ "; color: var(--gold); }
+  .log-success { color: var(--emerald); }
+  .log-err { color: var(--red); }
+  .log-sys { color: var(--text-dim); font-style: italic; }
+
+  .cmd-bar {
+    background: #080c16;
+    border-top: 1px solid var(--border);
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .cmd-prompt { color: var(--gold); font-weight: 700; font-size: 0.95rem; }
+  .cmd-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--cyan);
+    font-family: var(--f-mono);
+    font-size: 0.98rem;
+  }
+  .helper-chip-row {
+    padding: 8px 18px;
+    background: #050812;
+    border-top: 1px solid #141b30;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+  }
+  .chip {
+    background: #0e1526;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.74rem;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .chip:hover { border-color: var(--cyan); color: var(--cyan); }
+</style>
+</head>
+<body>
+  <header>
+    <div class="brand">TRACK A // <span>THE QUANTUM TERMINAL</span></div>
+    <a href="index.html" class="hub-link">← Return to Portal</a>
+  </header>
+
+  <div class="workspace">
+    <div class="left-pane">
+      <div class="mission-card">
+        <h3 id="stepHeader">ACT 1: THE LIMITS OF HARDWARE</h3>
+        <p id="stepMission">We have intercepted a locked safe with <b>8 memory addresses</b>. Type <code>vault.inspect(0)</code> in the terminal to probe box 0.</p>
+      </div>
+
+      <div class="state-monitor">
+        <div class="state-header">
+          <span>HARDWARE REGISTER: 8 PROBABILITIES</span>
+          <span id="regStatus" style="color:var(--gold);">STATE: IDLE</span>
+        </div>
+        <div class="amp-canvas-wrap">
+          <canvas id="scope"></canvas>
+        </div>
+        <div class="stats-strip">
+          <div class="stat-pill"><div class="num" id="statTries">0</div><div class="lbl">Physical Probes</div></div>
+          <div class="stat-pill"><div class="num" id="statConf">0%</div><div class="lbl">Confidence</div></div>
+          <div class="stat-pill"><div class="num" id="statSweet">K=2</div><div class="lbl">Grover Resonance</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="terminal-pane">
+      <div class="terminal-bar">
+        <span>BASH / PYTHON 3.12 (QISKIT INTERPRETER)</span>
+        <span style="color:var(--emerald);">● RUNTIME ONLINE</span>
+      </div>
+      <div class="history" id="termHistory">
+        <div class="log-line log-sys">Connected to IBM Falcon Quantum Register Simulation.</div>
+        <div class="log-line log-sys">Type instructions below. Type "help" if you get stuck.</div>
+      </div>
+      <div class="helper-chip-row" id="chipRow">
+        <span class="chip" onclick="quickFill('vault.inspect(0)')">vault.inspect(0)</span>
+        <span class="chip" onclick="quickFill('help')">help</span>
+        <span class="chip" onclick="quickFill('clear')">clear</span>
+      </div>
+      <div class="cmd-bar">
+        <span class="cmd-prompt">&gt;</span>
+        <input type="text" class="cmd-input" id="cmdIn" autofocus placeholder="Type command here..." spellcheck="false" autocomplete="off">
+      </div>
+    </div>
+  </div>
+
+<script>
+  let act = 1;
+  let target = 5;
+  let tries = 0;
+  let inSuper = false;
+  let marked = false;
+  let boosted = 0;
+
+  const amp = [0,0,0,0,0,0,0,0];
+
+  function drawScope() {
+    const cvs = document.getElementById('scope');
+    const ctx = cvs.getContext('2d');
+    cvs.width = cvs.clientWidth * window.devicePixelRatio;
+    cvs.height = cvs.clientHeight * window.devicePixelRatio;
+    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    const w = cvs.clientWidth, h = cvs.clientHeight, mid = h/2;
+
+    ctx.fillStyle = "#050811";
+    ctx.fillRect(0,0,w,h);
+
+    ctx.strokeStyle = "#1e2947";
+    ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(0, mid); ctx.lineTo(w, mid); ctx.stroke();
+    ctx.setLineDash([]);
+
+    const bw = w / 8;
+    for(let i=0; i<8; i++) {
+      let val = amp[i];
+      let barH = val * (mid * 0.85);
+      ctx.fillStyle = (i === target && inSuper) ? "#ffb800" : "#00f0ff";
+      if (val < 0) ctx.fillStyle = "#ff3366";
+      ctx.beginPath();
+      ctx.roundRect(i * bw + bw*0.15, mid - barH, bw*0.7, barH, 4);
+      ctx.fill();
+    }
+  }
+
+  function log(msg, cls="log-line") {
+    const hist = document.getElementById('termHistory');
+    const d = document.createElement('div');
+    d.className = "log-line " + cls;
+    d.textContent = msg;
+    hist.appendChild(d);
+    hist.scrollTop = hist.scrollHeight;
+  }
+
+  function quickFill(cmd) {
+    document.getElementById('cmdIn').value = cmd;
+    document.getElementById('cmdIn').focus();
+  }
+
+  const input = document.getElementById('cmdIn');
+  input.addEventListener('keydown', (e)=>{
+    if (e.key === 'Enter') {
+      const v = input.value.trim();
+      input.value = '';
+      if (!v) return;
+      exec(v);
+    }
+  });
+
+  function setAct(n) {
+    act = n;
+    const h = document.getElementById('stepHeader');
+    const m = document.getElementById('stepMission');
+    const row = document.getElementById('chipRow');
+
+    if (act === 1) {
+      h.textContent = "ACT 1: THE LIMITS OF HARDWARE";
+      m.innerHTML = "Probe boxes one by one with <code>vault.inspect(box_number)</code>.";
+      row.innerHTML = `
+        <span class="chip" onclick="quickFill('vault.inspect(0)')">vault.inspect(0)</span>
+        <span class="chip" onclick="quickFill('vault.inspect(1)')">vault.inspect(1)</span>
+        <span class="chip" onclick="quickFill('help')">help</span>
+      `;
+    } else if (act === 2) {
+      h.textContent = "ACT 2: CREATE SUPERPOSITION";
+      m.innerHTML = "A normal bit is 0 or 1. Use <code>q.h()</code> (Hadamard Gate) to spin all 8 boxes into simultaneous resonance.";
+      row.innerHTML = `
+        <span class="chip" onclick="quickFill('q.h()')">q.h()</span>
+        <span class="chip" onclick="quickFill('help')">help</span>
+      `;
+    } else if (act === 3) {
+      h.textContent = "ACT 3: THE GROVER OPERATOR";
+      m.innerHTML = "Superposition alone is an equal 12.5% gamble. Run <code>q.mark()</code> to invert the target, followed by <code>q.boost()</code> to amplify it.";
+      row.innerHTML = `
+        <span class="chip" onclick="quickFill('q.mark()')">q.mark()</span>
+        <span class="chip" onclick="quickFill('q.boost()')">q.boost()</span>
+      `;
+    } else if (act === 4) {
+      h.textContent = "ACT 4: WRITE THE FOR-LOOP";
+      m.innerHTML = "Don't repeat yourself! Code a loop to repeat the pair twice: <code>repeat(2): q.mark(); q.boost()</code>";
+      row.innerHTML = `
+        <span class="chip" onclick="quickFill('repeat(2): q.mark(); q.boost()')">repeat(2): q.mark(); q.boost()</span>
+        <span class="chip" onclick="quickFill('q.measure()')">q.measure()</span>
+      `;
+    }
+    drawScope();
+  }
+
+  function exec(cmd) {
+    log(cmd, "log-cmd");
+
+    if (cmd === "clear") {
+      document.getElementById('termHistory').innerHTML = '';
+      return;
+    }
+    if (cmd === "help") {
+      log("Valid commands depend on active mission step. Check the left mission card for syntax rules.", "log-sys");
+      return;
+    }
+
+    // ACT 1 EXECUTION
+    if (act === 1) {
+      if (cmd.startsWith("vault.inspect(")) {
+        tries++;
+        document.getElementById('statTries').textContent = tries;
+        const b = parseInt(cmd.replace("vault.inspect(","").replace(")",""), 10);
+        if (isNaN(b) || b < 0 || b > 7) {
+          log("IndexError: Safe only has boxes 0 to 7.", "log-err");
+          return;
+        }
+        if (b === target) {
+          log(`Physical probe ${b} cracked the lock! But checking one by one took multiple attempts.`, "log-success");
+          setAct(2);
+        } else {
+          log(`Box ${b} is empty. [Physical probe spent]`, "log-err");
+          if (tries >= 2) {
+            log("Valuable time wasted. In a 64-box safe, classical inspection will trigger the alarm. Upgrading to Quantum Register.", "log-sys");
+            setTimeout(()=> setAct(2), 1200);
+          }
+        }
+      } else {
+        log("SyntaxError: Unknown classical command. Try vault.inspect(0)", "log-err");
+      }
+      return;
+    }
+
+    // ACT 2 EXECUTION
+    if (act === 2) {
+      if (cmd === "q.h()") {
+        inSuper = true;
+        for(let i=0; i<8; i++) amp[i] = 0.35;
+        document.getElementById('statConf').textContent = "12.5%";
+        document.getElementById('regStatus').textContent = "SUPERPOSITION (8-STATES)";
+        document.getElementById('regStatus').style.color = "var(--cyan)";
+        log("qc.h(range(3)) applied. All 8 states vibrating simultaneously on edge!", "log-success");
+        setTimeout(()=> setAct(3), 1400);
+      } else {
+        log("CommandError: You must engage superposition first with q.h()", "log-err");
+      }
+      return;
+    }
+
+    // ACT 3 EXECUTION
+    if (act === 3) {
+      if (cmd === "q.mark()") {
+        amp[target] = -amp[target];
+        marked = true;
+        log("Phase Oracle applied: Target wave #5 flipped upside down.", "log-success");
+        drawScope();
+      } else if (cmd === "q.boost()") {
+        if (!marked) {
+          log("LogicError: You must mark() before you boost(), or you boost background noise!", "log-err");
+          return;
+        }
+        // Grover reflection about average
+        const mean = amp.reduce((a,b)=>a+b,0)/8;
+        for(let i=0; i<8; i++) amp[i] = 2*mean - amp[i];
+        boosted++;
+        marked = false;
+        let prob = Math.round(Math.pow(amp[target], 2) * 100);
+        document.getElementById('statConf').textContent = prob + "%";
+        log(`Diffuser operator applied. Target frequency reinforced! Odds now: ${prob}%`, "log-success");
+        if (boosted === 1) {
+          log("Great! But doing it once by hand is amateur. Let's code a loop.", "log-sys");
+          setTimeout(()=> setAct(4), 1400);
+        }
+      } else {
+        log("SyntaxError: Expected q.mark() or q.boost()", "log-err");
+      }
+      return;
+    }
+
+    // ACT 4 EXECUTION
+    if (act === 4) {
+      if (cmd.startsWith("repeat(") && cmd.includes("q.mark()") && cmd.includes("q.boost()")) {
+        // Optimal Grover is K=2
+        const k = parseInt(cmd.match(/\d+/)[0], 10);
+        for(let i=0; i<8; i++) amp[i] = 0.35;
+        for(let step=0; step<k; step++) {
+          amp[target] = -amp[target];
+          let mean = amp.reduce((a,b)=>a+b,0)/8;
+          for(let i=0; i<8; i++) amp[i] = 2*mean - amp[i];
+        }
+        let prob = Math.min(100, Math.round(Math.pow(amp[target], 2) * 100));
+        document.getElementById('statConf').textContent = prob + "%";
+        drawScope();
+
+        if (k === 2) {
+          log(`Loop ran 2 iterations. Target locked at ${prob}% constructive interference! Now type q.measure()`, "log-success");
+        } else if (k > 2) {
+          log(`Loop ran ${k} iterations. Overshot the sweet spot! Waves destructively cancelled to ${prob}%. Try repeat(2).`, "log-err");
+        } else {
+          log(`Loop ran ${k} iterations. Under-powered. Try repeat(2).`, "log-err");
+        }
+      } else if (cmd === "q.measure()") {
+        let prob = Math.pow(amp[target], 2);
+        if (prob > 0.8) {
+          log("💥 MEASUREMENT COLLAPSED TO TARGET COMBINATION #5 ON THE FIRST SHOT!", "log-success");
+          log("MISSION COMPLETE: You have coded a functioning quantum Grover algorithm.", "log-success");
+        } else {
+          log("Measurement collapsed to wrong box. Recalibrate your loop count!", "log-err");
+        }
+      } else {
+        log("SyntaxError. Structure your loop: repeat(2): q.mark(); q.boost()", "log-err");
+      }
+      return;
+    }
+  }
+
+  setAct(1);
+</script>
+</body>
+</html>
