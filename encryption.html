@@ -6,497 +6,762 @@
 <title>PROTOCOL: ZERO // Chapter 1: The Encryption Wiretap</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fira+Code:wght@400;600;700&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700;900&family=Fira+Code:wght@400;600&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --paper-bg: #080b14;
-    --comic-panel: #111726;
-    --comic-border: #000000;
-    --halftone: rgba(255, 255, 255, 0.03);
-    --neon-cyan: #00f0ff;
-    --neon-gold: #ffb800;
-    --neon-red: #ff2a55;
-    --neon-green: #00ffa3;
-    --speech-bubble: #ffffff;
-    --speech-text: #0a0e17;
-    --f-comic: 'Bangers', cursive, sans-serif;
+    --bg-base: #070a13;
+    --bg-surface: #0e1424;
+    --bg-card: #141d33;
+    --border-subtle: #1e2a44;
+    --border-strong: #2e3e63;
+    --cyan: #00f0ff;
+    --gold: #ffb800;
+    --emerald: #00ffa3;
+    --red: #ff3366;
+    --text-main: #f0f4ff;
+    --text-muted: #8797b5;
+    --f-title: 'Chakra Petch', sans-serif;
     --f-body: 'Outfit', sans-serif;
     --f-mono: 'Fira Code', monospace;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    background: var(--paper-bg);
-    color: #f0f4ff;
+    background: var(--bg-base);
+    color: var(--text-main);
     font-family: var(--f-body);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    overflow-x: hidden;
-    background-image: 
-      radial-gradient(var(--halftone) 15%, transparent 16%),
-      radial-gradient(var(--halftone) 15%, transparent 16%);
-    background-size: 16px 16px;
-    background-position: 0 0, 8px 8px;
   }
 
-  header.global-banner {
-    background: #080b14;
-    border-bottom: 4px solid var(--comic-border);
-    padding: 12px 24px;
+  /* CONSISTENT PROFESSIONAL HEADER */
+  header.global-header {
+    background: #090e1a;
+    border-bottom: 2px solid var(--border-subtle);
+    padding: 12px 28px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 6px 0 rgba(0,0,0,0.6);
     position: sticky;
     top: 0;
     z-index: 100;
   }
-  .brand-group { display: flex; align-items: center; gap: 14px; text-decoration: none; }
-  .brand-logo-badge {
-    width: 40px; height: 40px; background: #000;
-    border: 3px solid var(--neon-cyan); border-radius: 8px;
+  .brand-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+  }
+  .brand-badge {
+    width: 36px; height: 36px;
+    background: #000;
+    border: 2px solid var(--cyan);
+    border-radius: 6px;
     display: flex; align-items: center; justify-content: center;
-    box-shadow: 2px 2px 0 var(--neon-cyan);
   }
-  .brand-logo-badge svg { width: 22px; height: 22px; fill: var(--neon-cyan); }
+  .brand-badge svg { width: 20px; height: 20px; fill: var(--cyan); }
   .brand-title {
-    font-family: var(--f-comic); font-size: 1.6rem; letter-spacing: 0.08em;
-    color: var(--neon-gold); text-shadow: 2px 2px 0 #000; line-height: 1;
+    font-family: var(--f-title);
+    font-size: 1.25rem;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    color: #fff;
   }
-  .brand-title span { color: var(--neon-cyan); }
-  .breadcrumbs {
-    font-family: var(--f-mono); font-size: 0.8rem; color: #8fa0c4;
-    display: flex; align-items: center; gap: 6px;
-  }
-  .breadcrumbs a { color: var(--neon-cyan); text-decoration: none; font-weight: 700; }
+  .brand-title span { color: var(--cyan); }
 
-  .hud-pills { display: flex; gap: 10px; }
-  .hud-pill {
-    background: var(--comic-panel); border: 3px solid var(--comic-border);
-    padding: 6px 14px; border-radius: 20px; font-family: var(--f-comic);
-    font-size: 1rem; letter-spacing: 0.05em; color: #8fa0c4; box-shadow: 3px 3px 0 #000;
-    cursor: pointer; transition: all 0.2s;
+  .breadcrumb-nav {
+    font-family: var(--f-mono);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
-  .hud-pill:hover { transform: translate(-2px, -2px); color: #fff; }
-  .hud-pill.active { background: var(--neon-cyan); color: #000; }
-  .hud-pill.active-gold { background: var(--neon-gold); color: #000; }
+  .breadcrumb-nav a { color: var(--cyan); text-decoration: none; }
 
-  .comic-viewport {
-    flex: 1; display: flex; padding: 20px; gap: 20px;
-    max-width: 1440px; width: 100%; margin: 0 auto;
+  .tab-pills { display: flex; gap: 8px; }
+  .tab-pill {
+    background: transparent;
+    border: 1px solid var(--border-subtle);
+    color: var(--text-muted);
+    font-family: var(--f-title);
+    font-size: 0.84rem;
+    padding: 6px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
   }
-  .screen-section { display: none; width: 100%; }
-  .screen-section.active { display: flex; flex-direction: column; gap: 20px; }
+  .tab-pill.active {
+    background: var(--cyan);
+    color: #070a13;
+    border-color: var(--cyan);
+    font-weight: 700;
+  }
 
-  .comic-strip-grid {
-    display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 20px; width: 100%;
+  .main-stage {
+    flex: 1;
+    display: flex;
+    padding: 20px 28px;
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
   }
-  @media (max-width: 900px) { .comic-strip-grid { grid-template-columns: 1fr; } }
-  .comic-panel {
-    background: var(--comic-panel); border: 4px solid var(--comic-border);
-    box-shadow: 6px 6px 0 #000; border-radius: 8px; position: relative;
-    display: flex; flex-direction: column; overflow: hidden;
-  }
-  .panel-tag {
-    position: absolute; top: 0; left: 0; background: #000; color: #fff;
-    font-family: var(--f-comic); font-size: 0.95rem; padding: 4px 10px;
-    border-bottom-right-radius: 6px; z-index: 10;
-  }
-  .panel-art {
-    height: 240px; background: #070912; border-bottom: 4px solid var(--comic-border);
-    display: flex; align-items: center; justify-content: center; position: relative;
-  }
-  .panel-art svg { width: 80%; height: 80%; filter: drop-shadow(4px 4px 0 #000); }
-  .speech-bubble {
-    background: var(--speech-bubble); color: var(--speech-text); padding: 14px; margin: 14px;
-    border-radius: 12px; border: 3px solid var(--comic-border); box-shadow: 4px 4px 0 #000;
-    font-size: 0.95rem; line-height: 1.5; font-weight: 600;
-  }
-  .speech-bubble b { color: #b71540; font-family: var(--f-comic); }
+  .section-screen { display: none; width: 100%; }
+  .section-screen.active { display: flex; flex-direction: column; gap: 20px; }
 
+  /* SINGLE-PANEL CAROUSEL STAGE */
+  .carousel-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    max-width: 860px;
+    width: 100%;
+    margin: 0 auto;
+    gap: 20px;
+  }
+  .single-panel-card {
+    background: var(--bg-surface);
+    border: 2px solid var(--border-subtle);
+    border-radius: 12px;
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+  }
+  .panel-header-bar {
+    background: #090e1a;
+    border-bottom: 2px solid var(--border-subtle);
+    padding: 10px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--f-mono);
+    font-size: 0.8rem;
+    color: var(--cyan);
+  }
+  .panel-art-viewport {
+    height: 320px;
+    background: #050811;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border-bottom: 2px solid var(--border-subtle);
+  }
+  .panel-art-viewport svg { width: 75%; height: 75%; }
+  .panel-caption-box {
+    padding: 24px 28px;
+    background: var(--bg-surface);
+  }
+  .panel-caption-box h3 {
+    font-family: var(--f-title);
+    font-size: 1.4rem;
+    margin-bottom: 8px;
+    color: #fff;
+  }
+  .panel-caption-box p {
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    line-height: 1.6;
+  }
+
+  .carousel-nav-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 8px;
+  }
+  .nav-arrow-btn {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-main);
+    font-family: var(--f-title);
+    font-size: 0.95rem;
+    font-weight: 700;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+  }
+  .nav-arrow-btn:hover:not(:disabled) {
+    border-color: var(--cyan);
+    color: var(--cyan);
+  }
+  .nav-arrow-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .carousel-dots { display: flex; gap: 8px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border-strong); transition: all 0.2s; }
+  .dot.active { background: var(--cyan); width: 22px; border-radius: 4px; }
+
+  /* WORKSPACE SPLIT (CONSOLE & TERMINAL) */
   .workspace-split {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
-    height: calc(100vh - 130px); width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    height: calc(100vh - 120px);
+    width: 100%;
   }
   @media (max-width: 950px) { .workspace-split { grid-template-columns: 1fr; height: auto; } }
 
   .window-card {
-    background: var(--comic-panel); border: 4px solid var(--comic-border);
-    border-radius: 12px; box-shadow: 8px 8px 0 #000; display: flex;
-    flex-direction: column; overflow: hidden;
+    background: var(--bg-surface);
+    border: 2px solid var(--border-subtle);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
-  .window-top {
-    background: #080c16; border-bottom: 4px solid var(--comic-border);
-    padding: 10px 16px; display: flex; justify-content: space-between; align-items: center;
+  .window-header {
+    background: #090e1a;
+    border-bottom: 2px solid var(--border-subtle);
+    padding: 12px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
-  .window-top h2 {
-    font-family: var(--f-comic); font-size: 1.3rem; letter-spacing: 0.05em;
-    color: var(--neon-cyan); display: flex; align-items: center; gap: 8px;
+  .window-header h2 {
+    font-family: var(--f-title);
+    font-size: 1.15rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #fff;
   }
-
-  .toolbar-group { display: flex; gap: 8px; }
+  .tool-strip { display: flex; gap: 8px; }
   .tool-btn {
-    background: #000; border: 2px solid var(--border); color: #fff;
-    font-family: var(--f-comic); font-size: 0.95rem; padding: 4px 10px;
-    border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 4px;
-    box-shadow: 2px 2px 0 #000; transition: all 0.15s;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-main);
+    font-family: var(--f-mono);
+    font-size: 0.76rem;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 4px;
+    transition: all 0.15s;
   }
-  .tool-btn:hover { transform: translate(-1px, -1px); }
-  .btn-hint { color: var(--neon-gold); border-color: var(--neon-gold); }
-  .btn-sol { color: var(--neon-green); border-color: var(--neon-green); }
-  .btn-reset { color: var(--neon-red); border-color: var(--neon-red); }
+  .tool-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+  .btn-hint { color: var(--gold); border-color: rgba(255, 184, 0, 0.4); }
+  .btn-sol { color: var(--emerald); border-color: rgba(0, 255, 163, 0.4); }
+  .btn-reset { color: var(--red); border-color: rgba(255, 51, 102, 0.4); }
 
-  .chat-box { flex: 1; padding: 18px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
-  .msg-row { display: flex; gap: 12px; max-width: 90%; }
-  .msg-row.operator { align-self: flex-start; }
-  .msg-row.player { align-self: flex-end; flex-direction: row-reverse; }
-  .avatar-badge {
-    width: 38px; height: 38px; border-radius: 50%; border: 2px solid #000;
-    display: flex; align-items: center; justify-content: center; font-family: var(--f-comic);
-    font-size: 1.1rem; flex-shrink: 0; box-shadow: 2px 2px 0 #000;
+  /* OBJECTIVE DIRECTIVE BANNER */
+  .objective-directive {
+    background: rgba(0, 240, 255, 0.08);
+    border-bottom: 1px solid rgba(0, 240, 255, 0.25);
+    padding: 12px 18px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
   }
-  .av-op { background: var(--neon-gold); color: #000; }
-  .av-me { background: var(--neon-cyan); color: #000; }
+  .directive-icon {
+    background: var(--cyan);
+    color: #070a13;
+    font-weight: 800;
+    font-family: var(--f-mono);
+    font-size: 0.72rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-top: 2px;
+  }
+  .directive-text {
+    font-size: 0.92rem;
+    line-height: 1.45;
+  }
+  .directive-text b { color: var(--cyan); }
+
+  .chat-stream {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .chat-msg { display: flex; gap: 10px; max-width: 90%; }
+  .chat-msg.operator { align-self: flex-start; }
+  .chat-msg.player { align-self: flex-end; flex-direction: row-reverse; }
+  .avatar {
+    width: 34px; height: 34px; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--f-title); font-size: 0.95rem; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .avatar-op { background: var(--gold); color: #000; }
+  .avatar-me { background: var(--cyan); color: #000; }
   .bubble {
-    background: #fff; color: #070a12; border: 3px solid #000; border-radius: 12px;
-    padding: 12px 16px; font-size: 0.94rem; line-height: 1.5; box-shadow: 4px 4px 0 #000;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 0.92rem;
+    line-height: 1.5;
   }
-  .bubble b { color: #b71540; font-family: var(--f-comic); }
+  .bubble b { color: var(--gold); font-family: var(--f-mono); }
 
-  .palette-bar {
-    background: #0a0f1d; border-bottom: 2px solid #000; padding: 10px 14px;
-    display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+  /* BUILDING BLOCKS PALETTE */
+  .blocks-palette {
+    background: #090e1a;
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 10px 16px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
   }
-  .palette-label { font-family: var(--f-comic); color: var(--neon-gold); font-size: 1rem; }
-  .code-token {
-    background: #000; border: 2px solid var(--neon-cyan); color: var(--neon-cyan);
-    font-family: var(--f-mono); font-size: 0.8rem; padding: 4px 10px; border-radius: 6px;
-    cursor: pointer; box-shadow: 2px 2px 0 #000;
+  .palette-title {
+    font-family: var(--f-mono);
+    font-size: 0.74rem;
+    color: var(--text-muted);
   }
-  .code-token:hover { background: var(--neon-cyan); color: #000; }
+  .block-token {
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    color: var(--cyan);
+    font-family: var(--f-mono);
+    font-size: 0.78rem;
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .block-token:hover {
+    border-color: var(--cyan);
+    background: rgba(0, 240, 255, 0.1);
+  }
 
-  .editor-wrap { flex: 1; display: flex; flex-direction: column; padding: 14px; }
-  .code-area {
-    flex: 1; background: #070b16; border: 3px solid var(--comic-border);
-    border-radius: 8px; padding: 14px; font-family: var(--f-mono); font-size: 0.95rem;
-    line-height: 1.6; color: #a5b4fc; outline: none; resize: none; white-space: pre;
+  .editor-wrapper { flex: 1; display: flex; flex-direction: column; padding: 12px; }
+  .code-input {
+    flex: 1;
+    background: #050811;
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    padding: 14px;
+    font-family: var(--f-mono);
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: #c4d1eb;
+    outline: none;
+    resize: none;
+    white-space: pre;
   }
+
   .exec-bar {
-    background: #080d1a; border-top: 4px solid var(--comic-border);
-    padding: 14px; display: flex; flex-direction: column; gap: 10px;
+    background: #090e1a;
+    border-top: 1px solid var(--border-subtle);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   }
-  .sim-meter {
-    background: #040711; border: 2px solid var(--comic-border); border-radius: 6px;
-    padding: 8px 12px; display: flex; flex-direction: column; gap: 4px;
+  .progress-card {
+    background: #050811;
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    padding: 8px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
   }
-  .meter-label { display: flex; justify-content: space-between; font-family: var(--f-code); font-size: 0.75rem; color: #94a3b8; }
-  .meter-rail { height: 12px; background: #1e293b; border-radius: 6px; overflow: hidden; border: 1px solid #000; }
+  .progress-meta { display: flex; justify-content: space-between; font-family: var(--f-mono); font-size: 0.75rem; color: var(--text-muted); }
+  .meter-rail { height: 10px; background: #1a233a; border-radius: 5px; overflow: hidden; }
   .meter-fill { height: 100%; width: 0%; transition: width 0.4s ease; }
-  .btn-run {
-    background: linear-gradient(135deg, var(--neon-green), #05c46b); border: 3px solid #000;
-    box-shadow: 5px 5px 0 #000; color: #000; font-family: var(--f-comic); font-size: 1.4rem;
-    padding: 10px; border-radius: 8px; cursor: pointer; text-transform: uppercase;
+  .btn-exec {
+    background: var(--emerald);
+    border: none;
+    color: #050811;
+    font-family: var(--f-title);
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: 0.06em;
+    padding: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
   }
-  .btn-run:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 #000; }
+  .btn-exec:hover { filter: brightness(1.1); }
 
-  .plenary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-  @media (max-width: 860px) { .plenary-grid { grid-template-columns: 1fr; } }
+  /* PLENARY */
+  .plenary-card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  @media (max-width: 860px) { .plenary-card-grid { grid-template-columns: 1fr; } }
   .p-card {
-    background: var(--comic-panel); border: 4px solid var(--comic-border);
-    border-radius: 10px; padding: 18px; box-shadow: 6px 6px 0 #000;
-    display: flex; flex-direction: column; gap: 10px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
   }
   .p-tag {
-    font-family: var(--f-comic); font-size: 1.2rem; padding: 2px 8px; border: 2px solid #000;
-    border-radius: 4px; width: fit-content; box-shadow: 2px 2px 0 #000;
+    font-family: var(--f-mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 4px;
+    width: fit-content;
   }
-  .btn-continue {
-    background: linear-gradient(135deg, var(--neon-cyan), #00a2ff); border: 4px solid #000;
-    box-shadow: 6px 6px 0 #000; color: #000; font-family: var(--f-comic); font-size: 1.5rem;
-    padding: 12px 24px; border-radius: 10px; cursor: pointer; width: fit-content;
-    align-self: center; text-decoration: none; margin-top: 10px;
+  .btn-next-chapter {
+    background: var(--cyan);
+    color: #070a13;
+    font-family: var(--f-title);
+    font-size: 1.1rem;
+    font-weight: 800;
+    padding: 12px 28px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    width: fit-content;
+    align-self: center;
+    margin-top: 10px;
   }
 </style>
 </head>
 <body>
 
-<header class="global-banner">
+<header class="global-header">
   <a href="index.html" class="brand-group">
-    <div class="brand-logo-badge">
+    <div class="brand-badge">
       <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
     </div>
     <div class="brand-title">PROTOCOL: <span>ZERO</span></div>
   </a>
 
-  <div class="breadcrumbs">
-    <a href="index.html">HQ</a> &gt; <span>CHAPTER 1</span> &gt; <span style="color:var(--neon-cyan);">WIRETAP</span>
+  <div class="breadcrumb-nav">
+    <a href="index.html">HQ</a> &gt; <span>CHAPTER 1</span> &gt; <span style="color:var(--cyan);">THE WIRETAP</span>
   </div>
 
-  <div class="hud-pills">
-    <div class="hud-pill active" id="tabPrologue" onclick="openTab('prologue')">1. The Briefing</div>
-    <div class="hud-pill" id="tabTerminal" onclick="openTab('terminal')">2. Live Console</div>
-    <div class="hud-pill" id="tabPlenary" onclick="openTab('plenary')">3. Dossier</div>
+  <div class="tab-pills">
+    <button class="tab-pill active" id="tabStory" onclick="switchTab('story')">1. The Briefing</button>
+    <button class="tab-pill" id="tabTerminal" onclick="switchTab('terminal')">2. Live Console</button>
+    <button class="tab-pill" id="tabPlenary" onclick="switchTab('plenary')">3. Dossier</button>
   </div>
 </header>
 
-<main class="comic-viewport">
-  <section id="secPrologue" class="screen-section active">
-    <div class="comic-strip-grid">
-      <div class="comic-panel">
-        <span class="panel-tag">PANEL 1: 03:14 AM</span>
-        <div class="panel-art">
-          <svg viewBox="0 0 200 150">
-            <rect x="20" y="90" width="160" height="40" fill="#1e293b" stroke="#000" stroke-width="3"/>
-            <rect x="60" y="55" width="80" height="45" rx="4" fill="#0f172a" stroke="#000" stroke-width="3"/>
-            <rect x="65" y="60" width="70" height="35" fill="#00f0ff" opacity="0.8"/>
-            <text x="35" y="45" font-family="'Bangers', cursive" font-size="28" fill="#ffb800" stroke="#000" stroke-width="1">ZZZ...</text>
-          </svg>
+<main class="main-stage">
+  <!-- 1. SINGLE-PANEL CAROUSEL SPREAD -->
+  <section id="secStory" class="section-screen active">
+    <div class="carousel-wrapper">
+      <div class="single-panel-card">
+        <div class="panel-header-bar">
+          <span id="carouselPanelId">PANEL 1 OF 3 // 03:14 AM</span>
+          <span>LOCATION: UNKNOWN BANKING INTERCEPT</span>
         </div>
-        <div class="speech-bubble">
-          Your forehead lifts off the cold desk. Empty coffee mugs. You are jacked straight into an unauthorized banking tap.
+
+        <div class="panel-art-viewport" id="carouselArtwork">
+          <!-- Artwork injected by script -->
+        </div>
+
+        <div class="panel-caption-box">
+          <h3 id="carouselTitle">The Awakening</h3>
+          <p id="carouselCaption">
+            Your forehead lifts off the mahogany desk. Cold sweat. The office smells of stale espresso and dry circuit solder. You are tapped directly into a private bank wire interface.
+          </p>
         </div>
       </div>
 
-      <div class="comic-panel">
-        <span class="panel-tag">PANEL 2: THE SAT-PHONE</span>
-        <div class="panel-art">
-          <svg viewBox="0 0 200 150">
-            <circle cx="100" cy="75" r="42" fill="#ff2a55" stroke="#000" stroke-width="4"/>
-            <path d="M80 65 C80 50, 120 50, 120 65 C120 75, 110 75, 105 85 C100 90, 100 95, 100 95" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
-            <text x="30" y="35" font-family="'Bangers', cursive" font-size="24" fill="#ffb800" stroke="#000" stroke-width="1">BRRRRING!!</text>
-          </svg>
+      <div class="carousel-nav-bar">
+        <button class="nav-arrow-btn" id="btnPrevPanel" onclick="navPanel(-1)" disabled>◂ Previous</button>
+        <div class="carousel-dots">
+          <div class="dot active" id="dot0"></div>
+          <div class="dot" id="dot1"></div>
+          <div class="dot" id="dot2"></div>
         </div>
-        <div class="speech-bubble">
-          An encrypted satellite phone rings on the console. Unknown caller. You click answer.
-        </div>
-      </div>
-
-      <div class="comic-panel">
-        <span class="panel-tag">PANEL 3: THE VOICE</span>
-        <div class="panel-art">
-          <svg viewBox="0 0 200 150">
-            <circle cx="100" cy="55" r="28" fill="#0f172a" stroke="#000" stroke-width="3"/>
-            <path d="M55 130 C55 90, 145 90, 145 130 Z" fill="#0f172a" stroke="#000" stroke-width="3"/>
-            <rect x="85" y="50" width="12" height="6" fill="#00f0ff"/>
-            <rect x="103" y="50" width="12" height="6" fill="#00f0ff"/>
-          </svg>
-        </div>
-        <div class="speech-bubble">
-          <i>"We have <b>five minutes</b> before security trace our port. I will guide you, but <b>you build the code block by block</b>."</i>
-        </div>
+        <button class="nav-arrow-btn" id="btnNextPanel" onclick="navPanel(1)">Next Panel ▸</button>
       </div>
     </div>
-
-    <button class="btn-continue" onclick="openTab('terminal')" style="align-self:center;">CONNECT TO LIVE CONSOLE →</button>
   </section>
 
-  <section id="secTerminal" class="screen-section">
+  <!-- 2. SPLIT-SCREEN WORKSPACE -->
+  <section id="secTerminal" class="section-screen">
     <div class="workspace-split">
+      <!-- LEFT: GUIDED CHAT -->
       <div class="window-card">
-        <div class="window-top">
-          <h2><span>📞</span> SECURE COMMS // THE VOICE</h2>
-          <div class="toolbar-group">
-            <button class="tool-btn btn-hint" onclick="getHint()">💡 HINT</button>
-            <button class="tool-btn btn-sol" onclick="getSolution()">🔑 NEXT BLOCK</button>
-            <button class="tool-btn btn-reset" onclick="resetExercise()">🔄 RESET</button>
+        <div class="window-header">
+          <h2><span>📞</span> SECURE WIRE // THE VOICE</h2>
+          <div class="tool-strip">
+            <button class="tool-btn btn-hint" onclick="getHint()">💡 Hint</button>
+            <button class="tool-btn btn-sol" onclick="getNextBlock()">🔑 Next Block</button>
+            <button class="tool-btn btn-reset" onclick="resetTerminal()">🔄 Reset</button>
           </div>
         </div>
 
-        <div class="chat-box" id="chatStream">
-          <div class="msg-row operator">
-            <div class="avatar-badge av-op">MV</div>
+        <div class="objective-directive">
+          <div class="directive-icon">TASK</div>
+          <div class="directive-text" id="activeDirective">
+            Store the search space in a <b>Variable</b>. Click or type: <code>combinations = 2**128</code>.
+          </div>
+        </div>
+
+        <div class="chat-stream" id="chatLog">
+          <div class="chat-msg operator">
+            <div class="avatar avatar-op">MV</div>
             <div class="bubble">
-              <b>THE VOICE:</b> We are targeting a 128-bit master key ($2^{128}$ combinations).<br><br>
-              First, let's store the combination space in a <b>Variable</b> (a named memory box). Click or type: <code>combinations = 2**128</code>.
+              <b>THE VOICE:</b> Good, you're at the terminal. The target has locked the bank vault with a <b>128-bit key</b> ($2^{128}$ combinations).<br><br>
+              First, let's store the size of the problem in a <b>Variable</b> (a named memory box). Click the token above your editor or type it manually.
             </div>
           </div>
         </div>
       </div>
 
-      <div class="window-card" style="background:#050811;">
-        <div class="window-top">
+      <!-- RIGHT: CODE EDITOR -->
+      <div class="window-card">
+        <div class="window-header">
           <h2><span>💻</span> PROTOCOL_ZERO.PY</h2>
-          <span style="font-family:var(--f-code); font-size:0.75rem; color:var(--neon-green);" id="runtimeTag">PYTHON 3.12</span>
+          <span style="font-family:var(--f-mono); font-size:0.75rem; color:var(--emerald);" id="runtimeEnv">PYTHON 3.12 (CPU)</span>
         </div>
 
-        <div class="palette-bar">
-          <span class="palette-label">BLOCKS:</span>
-          <span class="code-token" onclick="insertToken('combinations = 2**128')">combinations = 2**128</span>
-          <span class="code-token" onclick="insertToken('for attempt in range(combinations):')">for attempt in range(...)</span>
-          <span class="code-token" onclick="insertToken('    if test_key(attempt): break')">    if test_key: break</span>
-          <span class="code-token" onclick="insertToken('qc = QuantumCircuit(128)')">qc = QuantumCircuit(128)</span>
-          <span class="code-token" onclick="insertToken('qc.h(range(128))')">qc.h(range(128))</span>
-          <span class="code-token" onclick="insertToken('qc.measure_all()')">qc.measure_all()</span>
+        <div class="blocks-palette">
+          <span class="palette-title">TOKENS:</span>
+          <span class="block-token" onclick="insertToken('combinations = 2**128')">combinations = 2**128</span>
+          <span class="block-token" onclick="insertToken('for attempt in range(combinations):')">for attempt in range(...)</span>
+          <span class="block-token" onclick="insertToken('    if test_key(attempt): break')">    if test_key: break</span>
+          <span class="block-token" onclick="insertToken('qc = QuantumCircuit(128)')">qc = QuantumCircuit(128)</span>
+          <span class="block-token" onclick="insertToken('qc.h(range(128))')">qc.h(range(128))</span>
+          <span class="block-token" onclick="insertToken('qc.measure_all()')">qc.measure_all()</span>
         </div>
 
-        <div class="editor-wrap">
-          <textarea class="code-area" id="codeEditor" spellcheck="false" placeholder="# Type code or click the building blocks above to assemble..."></textarea>
+        <div class="editor-wrapper">
+          <textarea class="code-input" id="editor" spellcheck="false" placeholder="# Click building block tokens or type Python instructions..."></textarea>
         </div>
 
         <div class="exec-bar">
-          <div class="sim-meter">
-            <div class="meter-label">
-              <span id="meterMethod">SEARCH METHOD: CPU SEQUENTIAL</span>
-              <span id="meterETA" style="color:var(--neon-red); font-weight:700;">EST. TIME: 10^18 YEARS</span>
+          <div class="progress-card">
+            <div class="progress-meta">
+              <span id="meterMethod">MODE: SEQUENTIAL CPU SEARCH</span>
+              <span id="meterETA" style="color:var(--red); font-weight:700;">EST. TIME: 10^18 YEARS</span>
             </div>
             <div class="meter-rail">
-              <div class="meter-fill" id="meterBar" style="background:var(--neon-red);"></div>
+              <div class="meter-fill" id="meterFill" style="background:var(--red);"></div>
             </div>
           </div>
-          <button class="btn-run" id="btnRun" onclick="runScript()">▶ EXECUTE SCRIPT ON WIRETAP</button>
+          <button class="btn-exec" id="btnExecute" onclick="runCode()">▶ Execute Script on Wiretap</button>
         </div>
       </div>
     </div>
   </section>
 
-  <section id="secPlenary" class="screen-section">
-    <div style="background:var(--comic-panel); border:4px solid #000; padding:20px; border-radius:12px; box-shadow:6px 6px 0 #000;">
-      <h1 style="font-family:var(--f-comic); font-size:2.4rem; color:var(--neon-gold); letter-spacing:0.06em;">MISSION 1 DEBRIEF: THE CRYPTOGRAPHY SHIFT</h1>
-      <p style="color:#cbd5e1; font-size:1.05rem; margin-top:6px;">
-        You built a variable, ran a sequential loop that choked against $2^{128}$ combinations, then executed a quantum superposition circuit. Here is what that means in the real world:
+  <!-- 3. PLENARY DOSSIER -->
+  <section id="secPlenary" class="section-screen">
+    <div style="background:var(--bg-surface); border:1px solid var(--border-subtle); padding:24px; border-radius:8px;">
+      <h1 style="font-family:var(--f-title); font-size:2.2rem; color:var(--gold); margin-bottom:6px;">MISSION 1 DEBRIEF // THE CRYPTOGRAPHY PARADOX</h1>
+      <p style="color:var(--text-muted); font-size:1.05rem;">
+        You built a variable, witnessed a classical loop drown against $2^{128}$ combinations, then collapsed the solution in 0.04 seconds using quantum superposition.
       </p>
     </div>
 
-    <div class="plenary-grid">
+    <div class="plenary-card-grid">
       <div class="p-card">
-        <span class="p-tag" style="background:var(--neon-green); color:#000;">THE GOOD: UNBREAKABLE DEFENSE</span>
-        <p style="font-size:0.95rem; line-height:1.6; color:#cbd5e1;">
-          <b>Quantum Key Distribution (QKD):</b> In classical networking, an eavesdropper can silently copy packets. In quantum mechanics, observing a qubit collapses it forever.<br><br>
-          If a spy taps a quantum fiber line, the keys corrupt instantly and trip the alarm.
+        <span class="p-tag" style="background:rgba(0, 255, 163, 0.15); color:var(--emerald);">THE GOOD: UNBREAKABLE DEFENSE</span>
+        <p style="font-size:0.95rem; line-height:1.6; color:var(--text-muted);">
+          <b>Quantum Key Distribution (QKD):</b> In classical networking, an eavesdropper can silently intercept packets. In quantum mechanics, measuring a particle collapses its state.<br><br>
+          If a spy taps an entangled quantum fiber line, the keys corrupt instantly and trip the alarm.
         </p>
       </div>
+
       <div class="p-card">
-        <span class="p-tag" style="background:var(--neon-gold); color:#000;">THE BAD: PASSWORDS HALVED</span>
-        <p style="font-size:0.95rem; line-height:1.6; color:#cbd5e1;">
+        <span class="p-tag" style="background:rgba(255, 184, 0, 0.15); color:var(--gold);">THE BAD: PASSWORDS HALVED</span>
+        <p style="font-size:0.95rem; line-height:1.6; color:var(--text-muted);">
           <b>Grover’s Quadratic Speedup:</b> Grover’s algorithm turns an $N$-step search into $\sqrt{N}$. This mathematically cuts symmetric passkey security in half.<br><br>
           <b>The Fix:</b> Double the length of passkeys. A 256-bit key against a quantum computer offers the exact security of a 128-bit key against classical machines.
         </p>
       </div>
+
       <div class="p-card">
-        <span class="p-tag" style="background:var(--neon-red); color:#fff;">THE SCARY: "HARVEST NOW"</span>
-        <p style="font-size:0.95rem; line-height:1.6; color:#cbd5e1;">
-          <b>Store Today, Decrypt Tomorrow:</b> Hostile agencies are intercepting and storing petabytes of encrypted traffic right now.<br><br>
+        <span class="p-tag" style="background:rgba(255, 51, 102, 0.15); color:var(--red);">THE SCARY: "HARVEST NOW"</span>
+        <p style="font-size:0.95rem; line-height:1.6; color:var(--text-muted);">
+          <b>Store Today, Decrypt Tomorrow:</b> Hostile intelligence agencies are storing petabytes of encrypted traffic right now.<br><br>
           They cannot read them today, but in a decade when fault-tolerant quantum computers boot up, every past secret will unlock.
         </p>
       </div>
     </div>
 
-    <a href="vault.html" class="btn-continue" style="align-self:center;">CONTINUE TO CHAPTER 2: THE INNER VAULTS →</a>
+    <a href="vault.html" class="btn-next-chapter">Proceed to Chapter 2: The Inner Vaults →</a>
   </section>
 </main>
 
 <script>
-  let stepState = 1;
+  let currentPanel = 0;
+  let codeStage = 1;
 
-  function openTab(tabName) {
-    document.querySelectorAll('.screen-section').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('.hud-pill').forEach(p => p.classList.remove('active', 'active-gold'));
-    
-    if (tabName === 'prologue') {
-      document.getElementById('secPrologue').classList.add('active');
-      document.getElementById('tabPrologue').classList.add('active');
-    } else if (tabName === 'terminal') {
+  const PANELS = [
+    {
+      id: "PANEL 1 OF 3 // 03:14 AM",
+      title: "The Awakening",
+      caption: "Your forehead lifts off the mahogany desk. Cold sweat. The office smells of stale espresso and dry circuit solder. You are tapped directly into a private bank wire interface.",
+      svg: `<svg viewBox="0 0 200 150"><rect x="20" y="90" width="160" height="40" fill="#151e33" stroke="#2e3e63" stroke-width="2"/><rect x="60" y="55" width="80" height="45" rx="4" fill="#090e1a" stroke="#2e3e63" stroke-width="2"/><rect x="65" y="60" width="70" height="35" fill="#00f0ff" opacity="0.8"/><text x="40" y="45" font-family="'Chakra Petch', sans-serif" font-size="22" fill="#ffb800">ZZZ...</text></svg>`
+    },
+    {
+      id: "PANEL 2 OF 3 // THE CALL",
+      title: "The Sat-Phone Rings",
+      caption: "The encrypted satellite handset on the desk vibrates against the metal surface. An unlisted number. You press speaker.",
+      svg: `<svg viewBox="0 0 200 150"><circle cx="100" cy="75" r="42" fill="#ff3366" opacity="0.2" stroke="#ff3366" stroke-width="2"/><circle cx="100" cy="75" r="32" fill="#ff3366" opacity="0.4"/><path d="M85 68 C85 55, 115 55, 115 68 C115 78, 108 78, 104 85" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/><text x="35" y="35" font-family="'Chakra Petch', sans-serif" font-size="20" fill="#ffb800">BRRRRING!!</text></svg>`
+    },
+    {
+      id: "PANEL 3 OF 3 // THE INSTRUCTION",
+      title: "The Mystery Voice",
+      caption: "\"Listen closely. You are tapped into the Zurich Main Vault. We have five minutes before they trace this port. I will guide you, but you must construct the code.\"",
+      svg: `<svg viewBox="0 0 200 150"><circle cx="100" cy="55" r="26" fill="#090e1a" stroke="#00f0ff" stroke-width="2"/><path d="M60 125 C60 90, 140 90, 140 125 Z" fill="#090e1a" stroke="#00f0ff" stroke-width="2"/><rect x="86" y="50" width="10" height="5" fill="#00f0ff"/><rect x="104" y="50" width="10" height="5" fill="#00f0ff"/></svg>`
+    }
+  ];
+
+  function renderPanel() {
+    const p = PANELS[currentPanel];
+    document.getElementById('carouselPanelId').textContent = p.id;
+    document.getElementById('carouselArtwork').innerHTML = p.svg;
+    document.getElementById('carouselTitle').textContent = p.title;
+    document.getElementById('carouselCaption').textContent = p.caption;
+
+    document.getElementById('btnPrevPanel').disabled = (currentPanel === 0);
+    const nextBtn = document.getElementById('btnNextPanel');
+    if (currentPanel === PANELS.length - 1) {
+      nextBtn.textContent = "Connect to Console →";
+      nextBtn.style.background = "var(--cyan)";
+      nextBtn.style.color = "#070a13";
+    } else {
+      nextBtn.textContent = "Next Panel ▸";
+      nextBtn.style.background = "var(--bg-surface)";
+      nextBtn.style.color = "var(--text-main)";
+    }
+
+    for (let i = 0; i < 3; i++) {
+      document.getElementById(`dot${i}`).classList.toggle('active', i === currentPanel);
+    }
+  }
+
+  function navPanel(delta) {
+    if (currentPanel === PANELS.length - 1 && delta === 1) {
+      switchTab('terminal');
+      return;
+    }
+    currentPanel = Math.max(0, Math.min(PANELS.length - 1, currentPanel + delta));
+    renderPanel();
+  }
+
+  function switchTab(t) {
+    document.querySelectorAll('.section-screen').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab-pill').forEach(p => p.classList.remove('active'));
+
+    if (t === 'story') {
+      document.getElementById('secStory').classList.add('active');
+      document.getElementById('tabStory').classList.add('active');
+    } else if (t === 'terminal') {
       document.getElementById('secTerminal').classList.add('active');
       document.getElementById('tabTerminal').classList.add('active');
-    } else if (tabName === 'plenary') {
+    } else if (t === 'plenary') {
       document.getElementById('secPlenary').classList.add('active');
-      document.getElementById('tabPlenary').classList.add('active-gold');
+      document.getElementById('tabPlenary').classList.add('active');
     }
   }
 
   function appendChat(who, text) {
-    const stream = document.getElementById('chatStream');
-    const row = document.createElement('div');
-    row.className = `msg-row ${who}`;
-    row.innerHTML = `
-      <div class="avatar-badge ${who === 'operator' ? 'av-op' : 'av-me'}">${who === 'operator' ? 'MV' : 'YOU'}</div>
+    const log = document.getElementById('chatLog');
+    const msg = document.createElement('div');
+    msg.className = `chat-msg ${who}`;
+    msg.innerHTML = `
+      <div class="avatar ${who === 'operator' ? 'avatar-op' : 'avatar-me'}">${who === 'operator' ? 'MV' : 'YOU'}</div>
       <div class="bubble"><b>${who === 'operator' ? 'THE VOICE:' : 'YOU:'}</b> ${text}</div>
     `;
-    stream.appendChild(row);
-    stream.scrollTop = stream.scrollHeight;
+    log.appendChild(msg);
+    log.scrollTop = log.scrollHeight;
   }
 
-  function insertToken(str) {
-    const ed = document.getElementById('codeEditor');
+  function insertToken(t) {
+    const ed = document.getElementById('editor');
     if (ed.value && !ed.value.endsWith('\n')) ed.value += '\n';
-    ed.value += str;
+    ed.value += t;
   }
 
   function getHint() {
-    if (stepState === 1) {
-      appendChat('operator', `<b>HINT:</b> We need to define the search space. Add <code>combinations = 2**128</code> to your script.`);
-    } else if (stepState === 2) {
-      appendChat('operator', `<b>HINT:</b> A classical loop tests combinations one by one. Add <code>for attempt in range(combinations):</code> and run it.`);
+    if (codeStage === 1) {
+      appendChat('operator', `<b>HINT:</b> We must define our search size first. Click the token <code>combinations = 2**128</code>.`);
+    } else if (codeStage === 2) {
+      appendChat('operator', `<b>HINT:</b> A classical search checks one by one. Add <code>for attempt in range(combinations):</code> and run the code.`);
     } else {
-      appendChat('operator', `<b>HINT:</b> Classical search failed! Clear the editor and add <code>qc = QuantumCircuit(128)</code>, then <code>qc.h(range(128))</code>.`);
+      appendChat('operator', `<b>HINT:</b> Classical search failed. Clear editor and allocate quantum qubits: <code>qc = QuantumCircuit(128)</code>, then <code>qc.h(range(128))</code>.`);
     }
   }
 
-  function getSolution() {
-    if (stepState === 1) {
+  function getNextBlock() {
+    if (codeStage === 1) {
       insertToken('combinations = 2**128');
-      appendChat('operator', `<b>BLOCK ADDED:</b> Created variable <code>combinations</code>.`);
-      stepState = 2;
-    } else if (stepState === 2) {
+      appendChat('operator', `<b>BLOCK ADDED:</b> Defined 128-bit key search space.`);
+      codeStage = 2;
+      document.getElementById('activeDirective').innerHTML = "Now add the classical loop: click <code>for attempt in range(...)</code> and <code>if test_key: break</code>.";
+    } else if (codeStage === 2) {
       insertToken('for attempt in range(combinations):\n    if test_key(attempt): break');
-      appendChat('operator', `<b>BLOCKS ADDED:</b> Classical sequential loop assembled.`);
+      appendChat('operator', `<b>BLOCKS ADDED:</b> Classical sequential loop assembled. Now hit EXECUTE.`);
     } else {
-      document.getElementById('codeEditor').value = "from qiskit import QuantumCircuit\nqc = QuantumCircuit(128)\nqc.h(range(128))\nqc.measure_all()";
-      appendChat('operator', `<b>QUANTUM SCRIPT ASSEMBLED:</b> Superposition initialized across 128 qubits.`);
+      document.getElementById('editor').value = "from qiskit import QuantumCircuit\nqc = QuantumCircuit(128)\nqc.h(range(128))\nqc.measure_all()";
+      appendChat('operator', `<b>QUANTUM CIRCUIT ASSEMBLED:</b> 128 Qubits placed in superposition.`);
     }
   }
 
-  function resetExercise() {
-    stepState = 1;
-    document.getElementById('codeEditor').value = '';
-    document.getElementById('meterBar').style.width = '0%';
-    document.getElementById('meterMethod').textContent = 'SEARCH METHOD: CPU SEQUENTIAL';
+  function resetTerminal() {
+    codeStage = 1;
+    document.getElementById('editor').value = '';
+    document.getElementById('meterFill').style.width = '0%';
+    document.getElementById('meterMethod').textContent = 'MODE: SEQUENTIAL CPU SEARCH';
     document.getElementById('meterETA').textContent = 'EST. TIME: 10^18 YEARS';
-    document.getElementById('btnRun').textContent = '▶ EXECUTE SCRIPT ON WIRETAP';
-    appendChat('operator', `Memory reset. Ready to assemble.`);
+    document.getElementById('btnExecute').textContent = '▶ Execute Script on Wiretap';
+    document.getElementById('activeDirective').innerHTML = "Store the search space in a <b>Variable</b>. Click or type: <code>combinations = 2**128</code>.";
+    appendChat('operator', "Console reset. Ready to assemble building blocks.");
   }
 
-  function runScript() {
-    const code = document.getElementById('codeEditor').value;
-
-    // Real parser checks what is in the editor!
-    if (!code.trim()) {
-      appendChat('operator', `Editor is empty! Assemble instructions first.`);
+  function runCode() {
+    const val = document.getElementById('editor').value;
+    if (!val.trim()) {
+      appendChat('operator', "Your editor is empty! Add building blocks first.");
       return;
     }
 
-    if (code.includes('combinations = 2**128') && !code.includes('for attempt in')) {
-      appendChat('operator', `Good! You defined the <b>Variable</b>. Now write the classical loop to check them: add <code>for attempt in range(combinations):</code>.`);
-      stepState = 2;
+    if (val.includes('combinations = 2**128') && !val.includes('for attempt in')) {
+      appendChat('operator', "Variable allocated! Now write the loop to search them: add <code>for attempt in range(combinations):</code>.");
+      codeStage = 2;
+      document.getElementById('activeDirective').innerHTML = "Add the sequential loop: click <code>for attempt in range(...)</code>.";
       return;
     }
 
-    if (code.includes('for attempt in') && !code.includes('QuantumCircuit')) {
-      // Classical loop evaluated
-      document.getElementById('meterBar').style.width = '2%';
-      appendChat('operator', `<b>THE VOICE:</b> Look at the meter! Your loop checked 100 million combinations, but $2^{128}$ is practically infinite! At 1 trillion guesses/sec, checking this sequentially takes longer than the universe has existed.<br><br>Clear the editor and build the <b>Quantum Superposition circuit</b>: start with <code>qc = QuantumCircuit(128)</code>.`);
-      stepState = 3;
-      document.getElementById('btnRun').textContent = '▶ EXECUTE QUANTUM CIRCUIT';
+    if (val.includes('for attempt in') && !val.includes('QuantumCircuit')) {
+      // Classical execution evaluated
+      document.getElementById('meterFill').style.width = '2%';
+      appendChat('operator', "<b>CPU CHOKED!</b> Look at the meter: at 1 trillion attempts per second, checking $2^{128}$ combinations sequentially takes longer than the universe has existed!<br><br>We must switch to quantum: start with <code>qc = QuantumCircuit(128)</code>.");
+      codeStage = 3;
+      document.getElementById('activeDirective').innerHTML = "Switch to quantum: clear editor and add <code>qc = QuantumCircuit(128)</code> followed by <code>qc.h(range(128))</code>.";
+      document.getElementById('btnExecute').textContent = "▶ Execute Quantum Circuit";
       return;
     }
 
-    if (code.includes('QuantumCircuit') && !code.includes('qc.h')) {
-      appendChat('operator', `You allocated 128 qubits, but they are flat at 0! You need to spin them on edge: add <code>qc.h(range(128))</code>.`);
+    if (val.includes('QuantumCircuit') && !val.includes('qc.h')) {
+      appendChat('operator', "You allocated 128 qubits, but they are stationary at 0! You must spin them into superposition: add <code>qc.h(range(128))</code>.");
       return;
     }
 
-    if (code.includes('qc.h')) {
-      // Quantum evaluated
-      document.getElementById('meterBar').style.width = '100%';
-      document.getElementById('meterBar').style.background = 'var(--neon-green)';
-      document.getElementById('meterMethod').textContent = 'SEARCH METHOD: QUANTUM PARALLEL';
-      document.getElementById('meterETA').style.color = 'var(--neon-green)';
+    if (val.includes('qc.h')) {
+      // Quantum parallel evaluated
+      document.getElementById('meterFill').style.width = '100%';
+      document.getElementById('meterFill').style.background = 'var(--emerald)';
+      document.getElementById('meterMethod').textContent = 'MODE: QUANTUM PARALLEL (128 QUBITS)';
+      document.getElementById('meterETA').style.color = 'var(--emerald)';
       document.getElementById('meterETA').textContent = 'COMPLETED: 0.04 SECONDS';
 
-      appendChat('operator', `<b>ACCESS GRANTED! PASSWORD: <code>X89_OMEGA_QUANTUM</code></b><br><br>By applying <code>qc.h()</code> (Hadamard), all $2^{128}$ combinations were tested in parallel within a single register.<br><br>Proceed to the Dossier!`);
-      setTimeout(() => openTab('plenary'), 1400);
+      appendChat('operator', "<b>ACCESS GRANTED! PASSKEY: <code>X89_OMEGA_QUANTUM</code></b><br><br>By creating a 128-qubit superposition, every combination was evaluated simultaneously inside a single register.<br><br>Proceed to the Dossier debriefing!");
+      document.getElementById('activeDirective').innerHTML = "<b>PASSKEY CRACKED!</b> Click <b>3. Dossier</b> in the top navigation to read your mission debrief.";
+      setTimeout(() => switchTab('plenary'), 1500);
     }
   }
+
+  renderPanel();
 </script>
 </body>
 </html>
